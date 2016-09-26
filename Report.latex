@@ -1,0 +1,19 @@
+\documentclass[11pt,english]{article}
+
+\author{
+	Lee, Seungsup
+	\and
+	Miller, Dory
+	\and
+	Payant, Andrew
+	\and
+	Powers-Luhn, Justin
+	\and
+	Zhang, Fan
+}
+\title{Nuclear Reactor Theory Project #1}
+
+
+\begin{document}
+	\maketitle
+\end{document}
