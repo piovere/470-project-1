@@ -1,3 +1,10 @@
+# Rebuild/make on every machine
+*.exe
+*.o
+
+# Don't clutter up with dat files
+*.dat
+
 # LaTeX cruft
 *.aux
 
