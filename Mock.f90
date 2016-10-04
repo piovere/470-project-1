@@ -30,7 +30,7 @@ A=0.0
 S=0.0
 print *, 'What would you like the geometry to be?(1 for spherical, 2 for cylindrical, 3 for cartesian)'
 !read *, G
-print * ,'Too Bad its going to be a plane'
+print * ,'Too Bad it is going to be a plane'
 sig=3.0E-2
 D=1.0E-2                                !! This is the Diffusion coeffecient / x step size ^2
 !!------------------------Source Initializing----------------!!
