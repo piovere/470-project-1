@@ -2,7 +2,6 @@
 \usepackage{mhchem}
 \usepackage{siunitx}
 \usepackage{physics}
-\usepackage{breqn}
 \usepackage{amsmath}
 
 \author{
@@ -26,7 +25,14 @@
 	\pagenumbering{arabic}
 	
 	\section{Introduction \& Background}
-	The introduction goes here.
+	Proving the capabilities and safety of a reactor design requires effective modeling of the neutron flux in the core (expressed in equation \ref{eqn:transport}). For real cores, however, this is impossible, and must be first simplified, then discretized to provide the solution for a representative mesh. 
+	
+	
+	\begin{multline}
+		\pdv{n}{t} + v \hat{\Omega} \cdot \nabla n + v \Sigma_t n \left( \mathbf{r}, E^\prime, \hat{\Omega}, t \right) = \\ \int_{4\pi} d \hat{\Omega} ^\prime \int_0^{\infty} dE ^\prime v^\prime \Sigma_s\left( E ^\prime \rightarrow E, \hat{\Omega} ^\prime \rightarrow \hat{\Omega} \right) n\left( \mathbf{r}, E ^\prime, \hat{\Omega} ^\prime, t \right) + s\left( \mathbf{r}, E, \hat{\Omega}, t \right)
+		\label{eqn:transport}
+	\end{multline}
+
 	\begin{table}
 		\begin{tabular}{ c c c c c }
 			\hline
@@ -46,11 +52,6 @@
 		\label{materials_table}
 		\caption{Macroscopic Cross Sections}
 	\end{table}
-	
-	\begin{multline}
-		\pdv{n}{t} + v \hat{\Omega} \cdot \nabla n + v \Sigma_t n \left( \mathbf{r}, E^\prime, \hat{\Omega}, t \right) = \\ \int_{4\pi} d \hat{\Omega} ^\prime \int_0^{\infty} dE ^\prime v^\prime \Sigma_s\left( E ^\prime \rightarrow E, \hat{\Omega} ^\prime \rightarrow \hat{\Omega} \right) n\left( \mathbf{r}, E ^\prime, \hat{\Omega} ^\prime, t \right) + s\left( \mathbf{r}, E, \hat{\Omega}, t \right)
-		\label{eqn:transport}
-	\end{multline}
 
 	\section{Methodology}
 	The methodology goes here. \ref{materials_table}
