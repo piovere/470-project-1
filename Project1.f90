@@ -26,16 +26,16 @@ external DGETRF, DGETRS
 ! Input data
 print *,'How many nodes would you like?' 
 read *, N                           ! Number of discrete points
-allocate (ipiv(1:N), S(1:N-1), A(1:N-1,1:N-1))
+allocate (ipiv(1:N-1), S(1:N-1), A(1:N-1,1:N-1))
 A=0.0
 S=0.0
 print *, 'What would you like the geometry to be?(1 for spherical, 2 for cylindrical, 3 for cartesian)'
 !read *, G
 print * ,'Too Bad its going to be a plane'
 sig=0.15
-m=N
+m=N-1
 W=10.0                                     !Length
-DeltaX = W/(m-1)
+DeltaX = W/(m)
 D=9.0 / (DeltaX**2.0)                               !! This is the Diffusion coeffecient / x step size ^2
 !!------------------------Source Initializing----------------!!
 S(1)=1.0E8 /(2.0*DeltaX)
@@ -43,10 +43,10 @@ S(1)=1.0E8 /(2.0*DeltaX)
 !print *,S(1)
 !!------------------------Declaring A------------------------!!
 A(1,1)=D+0.5*sig
-A(N-1,N-1)=D+0.5*sig
+A(m,m)=D+0.5*sig
 A(1,2)=-D
-A(N-1,N-2)=-D
-do i=2, N-2
+A(m,m-1)=-D
+do i=2, m-1
 
     A(i,i) = sig+2.0*D
     A(i-1,i) = -D
@@ -57,14 +57,14 @@ enddo
 ! DGETRF computes an LU factorization of a general M-by-N matrix A
 ! using partial pivoting with row interchanges.
 ! See: http://www.netlib.org/lapack/explore-html/d3/d6a/dgetrf_8f.html
-call DGETRF(N, N, A, N, ipiv, info)
+call DGETRF(m, m, A, m, ipiv, info)
 if (info /= 0) stop 'Matrix is numerically singular!'
 
 ! DGETRS - solve a system of linear equations A * X = B or 
 ! A' * X = B with a general N-by-N matrix A using the LU 
 ! factorization computed by DGETRF. 
 ! See: http://www.netlib.org/lapack/explore-html/d6/d49/dgetrs_8f.html
-call DGETRS('N', N, 1, A, N, ipiv, S, N, info)  
+call DGETRS('N', m, 1, A, m, ipiv, S, m, info)  
 if (info /= 0) stop 'Solution of the linear system failed!'
 
 ! Print solution
