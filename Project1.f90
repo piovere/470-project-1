@@ -26,30 +26,32 @@ external DGETRF, DGETRS
 ! Input data
 print *,'How many nodes would you like?' 
 read *, N                           ! Number of discrete points
-allocate (ipiv(1:N), S(1:N), A(1:N,1:N))
+allocate (ipiv(1:N), S(1:N-1), A(1:N-1,1:N-1))
 A=0.0
 S=0.0
 print *, 'What would you like the geometry to be?(1 for spherical, 2 for cylindrical, 3 for cartesian)'
 !read *, G
 print * ,'Too Bad its going to be a plane'
-sig=3.0E-2
+sig=0.15
 m=N
-W=1.0                                     !Length
+W=10.0                                     !Length
 DeltaX = W/(m-1)
-D=1.0E-3 / (DeltaX**2.0)                               !! This is the Diffusion coeffecient / x step size ^2
+D=9.0 / (DeltaX**2.0)                               !! This is the Diffusion coeffecient / x step size ^2
 !!------------------------Source Initializing----------------!!
 S(1)=1.0E8 /(2.0*DeltaX)
-S(N)=0.0
-print *,S(1)
+!S(N)=0.0
+!print *,S(1)
 !!------------------------Declaring A------------------------!!
-A(1,1)=1
-A(N,N)=1
-do i=2, N-1
+A(1,1)=D+0.5*sig
+A(N-1,N-1)=D+0.5*sig
+A(1,2)=-D
+A(N-1,N-2)=-D
+do i=2, N-2
 
     A(i,i) = sig+2.0*D
     A(i-1,i) = -D
     A(i+1,i) = -D
-	
+
 enddo
 
 ! DGETRF computes an LU factorization of a general M-by-N matrix A
