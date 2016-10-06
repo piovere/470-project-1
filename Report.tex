@@ -34,7 +34,7 @@
 	\section{Introduction \& Background}
 	Proving the capabilities and safety of a reactor design requires effective modeling of the neutron flux in the core (expressed in equation \ref{eqn:transport}). For real cores, however, this is impossible, and must be first simplified, then discretized to provide the solution for a representative mesh. 
 
-	For this project we have analyzed a simplified, monoenergetic, non-multiplying medium in one dimension. The flux originates from a single source at $x=0$ with a strength of $S=\SI{10E8}{\per\second}$. These assumptions simplify the transport equation to that presented in equation \ref{eqn:simplified_diffusion}.
+	For this project we have analyzed a simplified, monoenergetic, non-multiplying medium in one dimension. The flux originates from a single source at $x=0$ with a strength of $S=\SI{1E8}{\per\second}$. These assumptions simplify the transport equation to that presented in equation \ref{eqn:simplified_diffusion}.
 
 	In the following sections, we will first describe the terms in equation \ref{eqn:simplified_diffusion}, then provide both an analytical and a discrete solution. We will also provide an analysis of the accuracy of the analysis as a function of the number of nodes. Finally, we will analzye the solution of different coordinate systems on our solution.
 
@@ -77,7 +77,7 @@
 	\end{table*}
 
 	\section{Methodology}
-	The methodology goes here. \ref{materials_table}
+	Equation \ref{eqn:simplified_diffusion} is a simplified description of neutron diffusion through a finite medium, similar to a point source travelling through a shielding material to a detector. \ref{materials_table}
 	
 	\section{Results}
 	The results go here
