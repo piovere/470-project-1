@@ -3,6 +3,9 @@
 \usepackage{siunitx}
 \usepackage{physics}
 \usepackage{amsmath}
+\usepackage{cuted}
+\usepackage{graphicx}
+\graphicspath{ {images/} }
 
 \author{
 	Lee, Seungsup
@@ -23,17 +26,36 @@
 	\maketitle
 	\newpage
 	\pagenumbering{arabic}
+
+	\begin{abstract}
+
+	\end{abstract}
 	
 	\section{Introduction \& Background}
 	Proving the capabilities and safety of a reactor design requires effective modeling of the neutron flux in the core (expressed in equation \ref{eqn:transport}). For real cores, however, this is impossible, and must be first simplified, then discretized to provide the solution for a representative mesh. 
-	
-	
+
+	For this project we have analyzed a simplified, monoenergetic, non-multiplying medium in one dimension. The flux originates from a single source at $x=0$ with a strength of $S=\SI{10E8}{\per\second}$. These assumptions simplify the transport equation to that presented in equation \ref{eqn:simplified_diffusion}.
+
+	In the following sections, we will first describe the terms in equation \ref{eqn:simplified_diffusion}, then provide both an analytical and a discrete solution. We will also provide an analysis of the accuracy of the analysis as a function of the number of nodes. Finally, we will analzye the solution of different coordinate systems on our solution.
+
+	\begin{strip}
 	\begin{multline}
 		\pdv{n}{t} + v \hat{\Omega} \cdot \nabla n + v \Sigma_t n \left( \mathbf{r}, E^\prime, \hat{\Omega}, t \right) = \\ \int_{4\pi} d \hat{\Omega} ^\prime \int_0^{\infty} dE ^\prime v^\prime \Sigma_s\left( E ^\prime \rightarrow E, \hat{\Omega} ^\prime \rightarrow \hat{\Omega} \right) n\left( \mathbf{r}, E ^\prime, \hat{\Omega} ^\prime, t \right) + s\left( \mathbf{r}, E, \hat{\Omega}, t \right)
 		\label{eqn:transport}
 	\end{multline}
+	\end{strip}
 
-	\begin{table}
+	\begin{equation}
+		-D_m \dv[2]{\phi}{x} + \Sigma^m_a \phi = 
+		\begin{cases}
+			S & \left(x=0\right) \\
+			0 & \left(x>0\right)
+		\end{cases}
+		\label{eqn:simplified_diffusion}
+	\end{equation}
+
+	\begin{table*}
+		\begin{center}
 		\begin{tabular}{ c c c c c }
 			\hline
 			\textit{Material} & $ \Sigma_{tr}(\si{cm^{-1}}) $ & $ \Sigma_a (\si{cm^{-1}}) $ & $ \nu \Sigma_f (\si{cm^{-1}}) $ & \textit{Relative Absorption} \\
@@ -51,7 +73,8 @@
 		\end{tabular}
 		\label{materials_table}
 		\caption{Macroscopic Cross Sections}
-	\end{table}
+		\end{center}
+	\end{table*}
 
 	\section{Methodology}
 	The methodology goes here. \ref{materials_table}
