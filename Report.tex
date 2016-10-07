@@ -1,4 +1,4 @@
-\documentclass[10pt,peerreviewca,onecolumn]{IEEEtran} % [11pt,english]{article}
+\documentclass[10pt,peerreviewca]{IEEEtran} % [11pt,english]{article}
 \usepackage[version=4]{mhchem}
 \usepackage{siunitx}
 \usepackage{physics}
@@ -114,7 +114,7 @@
 		\phi(x) = \frac{S L}{2 D_m} \left( \frac{\e^{-x/L} - \e^{\left(x-2w\right)/L}}{1 - \e^{-2w/L}} \right) \numberthis \label{eqn:analyticcartesian}
 	\end{equation*}
 
-	\subsection{Numerical Approximation}
+	\subsection{Numerical Approximation} \label{ssec:numerical}
 	It is rare to be faced with a design that allows for an analytical solution. Fortunately, numerical analysis methods exist that allow for approximation of the analytical solution. By dividing our hypothetical medium into discrete sections with nodes at the boundaries between these sections, it is possible to express the flux vector with equation \ref{eqn:linalg_flux}:
 	\begin{equation}
 		\opmat{A} \vec{\phi} = \vec{S}
@@ -163,15 +163,20 @@
 		-D_m \frac{\phi_1 - \phi_0}{\Delta x^2} - \frac{S}{2 \Delta x} + \frac{1}{2} \Sigma_a \phi_0 = 0 \\
 		\frac{-D_m}{\Delta x^2} \phi_1 + \left( \frac{D}{\Delta x^2} + \frac{1}{2} \Sigma_a \right) \phi_0 = 0
 	\end{align*}
+	This gives a final matrix $\opmat{A}$ (for $n=5$ nodes):
+	\[
+	\begin{bmatrix}[1.5]
+		\frac{D_m}{\Delta x^2} + \frac{1}{2}\Sigma_a & \frac{-D_m}{\Delta x^2} & 0 & 0 \\
+		\frac{-D_m}{\Delta x^2} & \frac{2D_m}{\Delta x^2} + \Sigma_a & \frac{-D_m}{\Delta x^2} & 0 \\
+		0 & \frac{-D_m}{\Delta x^2} & \frac{2D_m}{\Delta x^2} + \Sigma_a & \frac{-D_m}{\Delta x^2} & \dots \\
+		0 & 0 & \frac{-D_m}{\Delta x^2} & \frac{2D}{\Delta x^2} + \Sigma_a
+	\end{bmatrix}
+	\]
 
 	\section{Results}
-	\begin{figure}[h]
-		\includegraphics[width=7in]{curve_vs_number_of_nodes}
-		\caption{Numerical Solution for 3, 5, 10, and 100 Nodes}
-		\label{fig:numnodes}
-	\end{figure}
+	A Fortran program was developed to implement the discrete solution to the transport equation from section \ref{ssec:numerical}. The source code is included as an attachment to this report. The numerical solution produced values that converged with the analytical solution as the number of nodes increased, showing clearly exponential behavior as $n\rightarrow\infty$. This behavior can be seen in figure \ref{fig:numerical_vs_analytical}.
 
-	\begin{figure}[h]
+	\begin{figure}
 		\includegraphics[width=7in]{analytic_vs_numerical}
 		\caption{Comparison of Numerical and Analytical Solutions}
 		\label{fig:numerical_vs_analytical}
