@@ -1,5 +1,5 @@
 \documentclass[10pt,peerreviewca,onecolumn]{IEEEtran} % [11pt,english]{article}
-\usepackage{mhchem}
+\usepackage[version=4]{mhchem}
 \usepackage{siunitx}
 \usepackage{physics}
 \usepackage{amsmath}
@@ -10,6 +10,15 @@
 \newcommand{\e}{\mathrm{e}}
 \newcommand\numberthis{\addtocounter{equation}{1}\tag{\theequation}}
 \newcommand{\opmat}[1]{\mathbf{#1}}
+
+% Some voodoo to fix matrix spacing
+\makeatletter
+\renewcommand*\env@matrix[1][\arraystretch]{%
+  \edef\arraystretch{#1}%
+  \hskip -\arraycolsep
+  \let\@ifnextchar\new@ifnextchar
+  \array{*\c@MaxMatrixCols c}}
+\makeatother
 
 \author{
 	Lee, Seungsup
@@ -97,7 +106,7 @@
 	\end{align*}
 	Next, use the fact that $ -D_m \phi^\prime(0) = J(0) = S/2$ to solve for $A$
 	\begin{align*}
-		J(0) = \frac{S}{2} &= -\frac{A}{L} \left( 1 + \e^{-2w/L} \right) \\
+		J(0) = \frac{S}{2} &= -\frac{A}{L} \left( 1 + \e^{-2w/L} \right) \numberthis \label{eqn:leftboundary} \\
 		A &= \frac{S L}{2 D_m}\left( 1 + \e^{-2w/L} \right)^{-1}
 	\end{align*}
 	Substituting this in to equation \ref{eqn:generalsolution}, we get:
@@ -106,13 +115,55 @@
 	\end{equation*}
 
 	\subsection{Numerical Approximation}
-	It is rare to be faced with a design that allows for an analytical solution. Fortunately, numerical analysis methods exist that allow for approximation of the analytical solution. By dividing our hypothetical medium into discrete sections with nodes at the boundaries between these sections, it is possible to express the flux vector with equation \ref{eqn:linalg_flux}.
-
+	It is rare to be faced with a design that allows for an analytical solution. Fortunately, numerical analysis methods exist that allow for approximation of the analytical solution. By dividing our hypothetical medium into discrete sections with nodes at the boundaries between these sections, it is possible to express the flux vector with equation \ref{eqn:linalg_flux}:
 	\begin{equation}
 		\opmat{A} \vec{\phi} = \vec{S}
 		\label{eqn:linalg_flux}
 	\end{equation}
+	where $\vec{\phi}$ is the flux at each node. The operator $\opmat{A}$ can be derived using the two-node approximation of the  second derivative formula:
 	
+	\begin{equation*}
+		\left. \pdv[2]{\phi}{x} \right|_i \approx \frac{\phi_{i-1} - 2\phi_i + \phi_{i+1}}{\Delta x^2}
+	\end{equation*}
+
+	For non-edge nodes, this can be derived as follows:
+	\begin{align*}
+		-D_m \dv[2]{\phi}{x} &+ \Sigma_a \phi \\
+		-D_m \int_{x_i - \frac{\Delta x}{2}}^{x_i + \frac{\Delta x}{2}} \dv[2]{\phi}{x} dx &+ 
+			\int_{x_i - \frac{\Delta x}{2}}^{x_i + \frac{\Delta x}{2}} \Sigma_a \phi dx = 0 \\
+		-D_m \left. \dv{\phi}{x} \right|_{x_i - \frac{\Delta x}{2}}^{x_i + \frac{\Delta x}{2}} &+ 
+			\int_{x_i - \frac{\Delta x}{2}}^{x_i + \frac{\Delta x}{2}} \Sigma_a \phi dx = 0 \\
+		-D_m \left( \frac{\phi_{i+1} - \phi_i}{\Delta x} - \frac{\phi_{i} - \phi_{i-1}}{\Delta x} \right) &+
+			\int_{x_i - \frac{\Delta x}{2}}^{x_i + \frac{\Delta x}{2}} \Sigma_a \phi dx = 0 \\
+		-D_m \left( \frac{\phi_{i+1} - \phi_i}{\Delta x} - \frac{\phi_{i} - \phi_{i-1}}{\Delta x} \right) &+
+			\Sigma_a \phi_i \Delta x = 0
+		\intertext{Dividing each term by $\Delta x$ gives:}
+		\left( \frac{-D_m}{\Delta x^2} \right) \phi_{i-1} + \left( \frac{2D_m}{\Delta x^2} + \Sigma_a \right)\phi_i + \left( \frac{-D_m}{\Delta x^2} \right) \phi_{i+1} = 0
+	\end{align*}
+	From this we see that our operator $\opmat{A}$ will have non-corner terms:
+	\[
+	\begin{bmatrix}[1.5]
+		\hdotsfor{5} \\
+		\frac{-D_m}{\Delta x^2} & \frac{2D_m}{\Delta x^2} + \Sigma_a & \frac{-D_m}{\Delta x^2} & 0 & \dots \\
+		0 & \frac{-D_m}{\Delta x^2} & \frac{2D_m}{\Delta x^2} + \Sigma_a & \frac{-D_m}{\Delta x^2} & \dots \\
+		& & \ddots & & \\
+		\dots & 0 & \frac{-D_m}{\Delta x^2} & \frac{2D_m}{\Delta x^2} + \Sigma_a & \frac{-D_m}{\Delta x^2} \\
+		\hdotsfor{5}
+	\end{bmatrix}
+	\]
+	We then solve for our top row using the boundary condition in equation \ref{eqn:leftboundary}: 
+	\begin{align*}
+		-D_m \frac{\phi_1 - \phi_0}{\Delta x} + D_m \left. \dv{\phi}{x} \right|_0 + \int_0^{\Delta x / 2} 
+			\Sigma_a \phi dx = 0 \\
+		-D_m \frac{\phi_1 - \phi_0}{\Delta x} + D_m \frac{S}{2} + \int_0^{\Delta x / 2} 
+			\Sigma_a \phi dx = 0 \\
+		-D_m \frac{\phi_1 - \phi_0}{\Delta x} + D_m \frac{S}{2} + \Sigma_a \phi_0 \int_0^{\Delta x / 2}
+			dx = 0 \\
+	\intertext{Divide by $\Delta x$ on both sides:}
+		-D_m \frac{\phi_1 - \phi_0}{\Delta x^2} - \frac{S}{2 \Delta x} + \frac{1}{2} \Sigma_a \phi_0 = 0 \\
+		\frac{-D_m}{\Delta x^2} \phi_1 + \left( \frac{D}{\Delta x^2} + \frac{1}{2} \Sigma_a \right) \phi_0 = 0
+	\end{align*}
+
 	\section{Results}
 	\begin{figure}[h]
 		\includegraphics[width=7in]{curve_vs_number_of_nodes}
