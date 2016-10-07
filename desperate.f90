@@ -1,5 +1,5 @@
 program desperate
-! Neutron Flux desperation
+! Neutron Flux desperation Group 3
 
 use iso_fortran_env
 implicit none
@@ -27,6 +27,7 @@ print *,"What is you geometry? cartesian=1, cylindrical=2, spherical=3"
 read *,G
 print *,"Relative Strength of other side of slab (ie f*s) f=?"
 read *,f
+
 D=3.62E-2                    ! Sigma Transport
 sigma_a = 0.15               ! Sigma 
 D = 1.0/(3.0*D)              ! Diffusion Coef
@@ -38,82 +39,90 @@ b(n)=f*b(1)
 
 L= sqrt(D/sigma_a)
 
-if (g .eq. 1) then              !----------CARTESIAN-------------!
+if (G .eq. 1) then              !----------CARTESIAN-------------!
+
    A(1,1) = (0.5*sigma_a)+(D/(dx**2.0))
    A(1,2) = -D/(dx**2.0)
    A(n,n) = 0.5*sigma_a+D/(dx**2.0)
    A(n,n-1) =-D/(dx**2.0)
 
    C =  b(1)*L/(2.0*D*(1.0+exp(-2.0*w/L)))
-!   print *,"C is", C
 
    psi = C*(1-exp((-2.0*w)/L))
    write(55, "(1e10.4)") psi
-!   print *, "Psi(1) is ",psi
  
    psi = C*(exp(-dx/L)-exp((dx-2.0*w)/L))
    write(55, "(1e10.4)") psi
 
 
    do i=2 , n-1
-      x = dx*i
+
       A(i,i) = sigma_a+2.0*D/(dx**2.0)
       A(i,i+1) = -D/(dx**2.0)
       A(i,i-1) = -D/(dx**2.0)
 
+      x = dx*i
       psi = C*(exp(-x/L)-exp((x-2.0*w)/L))
       write(55, "(1e10.4)") psi
    enddo
 
 
-elseif (G .eq. 2) then           !------------CYLINDER--------------------!
+elseif (G .eq. 3) then           !------------SPHERE--------------------!
 
-    
    A(1,1) = (0.5*sigma_a)+(D/(dx**2.0))
-   A(1,2) = -D/(dx**2.0)
+   A(1,2) = -(D/(dx**2.0))*(1.0-(2.0/(2.0*1.0-1.0)))
    A(n,n) = 0.5*sigma_a+D/(dx**2.0)
-   A(n,n-1) =-D/(dx**2.0)
+   A(n,n-1) =-(D/(dx**2.0))*(1.0-(2.0/(2.0*n-1.0)))
 
+   C =  b(1)/(4*pi*D)
 
-
-   do i=2, n-1
-      A(i,i) = sigma_a+2.0*D/(dx**2.0)
-      A(i,i+1) = -D/(dx**2.0)
-      A(i,i-1) = -D/(dx**2.0)
-
-      x=dx*i
-!      psi=
-      write(55,"(1e10.4)") psi
-    enddo
-
-
-elseif (G .eq. 3) then          !------------------SPHERE---------------------!
-    C = b(1)/(4.0*pi*D)
-    psi = 0
-    write (55,"(1e10.4)")psi
-    psi = C*(exp(-dx/L))/dx
-    
-   A(1,1) = (0.5*sigma_a)+(D/(dx**2.0))
-   A(1,2) = -D/(dx**2.0)
-   A(n,n) = 0.5*sigma_a+D/(dx**2.0)
-   A(n,n-1) =-D/(dx**2.0)
+   psi = 0
+   write(55, "(1e10.4)") psi
+ 
+   psi = C*(exp(-dx/L)/(dx))
+   write(55, "(1e10.4)") psi
 
 
     do i=2 ,n-1
 
+       A(i,i) = sigma_a+2.0*D/(dx**2.0)
+       A(i,i+1) = -(D/(dx**2.0))*(1.0+(2.0/(2.0*i+1.0)))
+       A(i,i-1) = -(D/(dx**2.0))*(1.0-(2.0/(2.0*i-1.0)))
 
-    A(i,i) = sigma_a+2.0*D/(dx**2.0)
-    A(i,i+1) = -D/(dx**2.0)
-    A(i,i-1) = -D/(dx**2.0)
 
-    x=i*dx    
-    psi= C*(exp(-x/L))/x
-    write(55, "(1e10.4)") psi
+      x = dx*i
+      psi = C*(exp(-x/L)/(x))
+      write(55, "(1e10.4)") psi
+    enddo
+
+
+elseif (G .eq. 2) then          !------------------Cylinder---------------------!
+    
+   A(1,1) = (0.5*sigma_a)+(D/(dx**2.0))
+   A(1,2) = -(D/(dx**2.0))*(1.0-(1.0/(2.0*1.0-1.0)))
+   A(n,n) = 0.5*sigma_a+D/(dx**2.0)
+   A(n,n-1) =-(D/(dx**2.0))*(1.0-(1.0/(2.0*n-1.0)))
+
+!   C =  b(1)*L/(2.0*D*(1.0+exp(-2.0*w/L)))
+
+!   psi = C*(1-exp((-2.0*w)/L))
+!   write(55, "(1e10.4)") psi
+ 
+!   psi = C*(exp(-dx/L)-exp((dx-2.0*w)/L))
+!   write(55, "(1e10.4)") psi
+
+    do i=2 ,n-1
+
+        A(i,i) = sigma_a+2.0*D/(dx**2.0)
+        A(i,i+1) = -(D/(dx**2.0))*(1.0+(1.0/(2.0*i+1.0)))
+        A(i,i-1) = -(D/(dx**2.0))*(1.0-(1.0/(2.0*i-1.0)))
+!        x = dx*i
+!        psi = C*(exp(-x/L)-exp((x-2.0*w)/L))
+!        write(55, "(1e10.4)") psi
     enddo
 
 else
    print *,"Thats not a valid coordinate system"
-!   goto 10
 endif
 
 b=b/(2.0*dx)
@@ -132,12 +141,7 @@ call DGETRS('N', n, 1, A, n, ipiv, b, n, info)
 if (info /= 0) stop 'Solution of the linear system failed!'
 
 ! Print solution
-!print *, "Solved vector x is:"
-!write (fmt,"(a,i3,a)") "(",n,"(f10.4,1x))"
-!print fmt, b
 open( unit = 77, file= "desperate.dat")
 write(77, "(1e10.4)" ) b
-print *,b(1)
-!10
-end program desperate
 
+end program desperate
