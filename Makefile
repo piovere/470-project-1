@@ -1,5 +1,5 @@
-EXECUTABLE=Mock.exe
-SOURCES=Mock.f90
+EXECUTABLE=desperate.exe
+SOURCES=desperate.f90
 
 OBJECTS=$(SOURCES:.f90=.o)
 LDFLAGS=-llapack
