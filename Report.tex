@@ -174,12 +174,22 @@
 	\]
 
 	\section{Results}
-	A Fortran program was developed to implement the discrete solution to the transport equation from section \ref{ssec:numerical}. The source code is included as an attachment to this report. The numerical solution produced values that converged with the analytical solution as the number of nodes increased, showing clearly exponential behavior as $n\rightarrow\infty$. This behavior can be seen in figure \ref{fig:numerical_vs_analytical}.
+	A Fortran program was developed to implement the discrete solution to the transport equation from section \ref{ssec:numerical}. The source code is included as an attachment to this report. The numerical solution produced values that converged with the analytical solution as the number of nodes increased, showing clearly exponential behavior as $n\rightarrow\infty$. This behavior can be seen in figure \ref{fig:numerical_vs_analytical}. 
+
+	We have also examined this solution analytically in different coordinate systems, specifically cartesian, cylindrical, and spherical. The output of these solutions is easily seen in figure \ref{fig:different coordinate systems}. Of note, the derivation for spherical coordinates did not allow for incorporation of the boundary condition $\phi(W)=0$, which may account for the difference in that curve.
 
 	\begin{figure}
 		\includegraphics[width=7in]{analytic_vs_numerical}
 		\caption{Comparison of Numerical and Analytical Solutions}
 		\label{fig:numerical_vs_analytical}
+	\end{figure}
+
+	\begin{figure}
+		\begin{centering}
+		\includegraphics[width=4in]{different_coordinate_systems}
+		\caption{Analytical Solution for Cartesian, Cylindrical, and Spherical Coordinates}
+		\label{fig:different coordinate systems}
+		\end{centering}
 	\end{figure}
 	
 	\section{Conclusions}
