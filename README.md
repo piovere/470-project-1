@@ -7,3 +7,4 @@
 - Include derivations for solution in other coordinate systems
 - Update python program to account for other coordinate systems
 - Graphs of other coordinate systems results? Should they be any different?
+- Plot many different N values on the same graph...log scale
