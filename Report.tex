@@ -173,6 +173,12 @@
 	\end{bmatrix}
 	\]
 
+	Additional analysis was performed assuming the presence of a source of strength $f \times S$ located at $x=W$. This produced an operator with matrix values
+	\begin{align*}
+		a_{\left( n-1, n-1 \right)} &= BLOOB \\
+		a_{\left( n-1, n-2 \right)} &= BLOOOP
+	\end{align*}
+
 	\section{Results}
 	A Fortran program was developed to implement the discrete solution to the transport equation from section \ref{ssec:numerical}. The source code is included as an attachment to this report. The numerical solution produced values that converged as the number of nodes increased, showing clearly exponential behavior as $n\rightarrow\infty$. This behavior can be seen in figures \ref{fig:numerical_vs_analytical} and \ref{fig:many nodes one chart}. 
 
