@@ -88,8 +88,8 @@
 			& \num{3.62e-2} & \num{0.1532} & \num{0.1570} & \num{1.000} \\
 			\hline
 		\end{tabular}
-		\label{materials_table}
 		\caption{Macroscopic Cross Sections}
+		\label{materials_table}
 		\end{center}
 	\end{table*}
 
@@ -218,10 +218,10 @@
 	\end{bmatrix}
 	\]
 
+	We see here that the spherical and cylindrical coordinate systems introduce additional dependence on $\frac{1}{r}$, as expected from their derivations (included as attachments).
+
 	\section{Results}
 	A Fortran program was developed to implement the discrete solution to the transport equation from section \ref{ssec:numerical}. The source code is included as an attachment to this report. The numerical solution produced values that converged as the number of nodes increased, showing clearly exponential behavior as $n\rightarrow\infty$. This behavior can be seen in figures \ref{fig:numerical_vs_analytical} and \ref{fig:many nodes one chart}. 
-
-	We have also examined this solution analytically in different coordinate systems, specifically cartesian, cylindrical, and spherical. The output of these solutions is easily seen in figure \ref{fig:different coordinate systems}. Of note, the derivation for spherical coordinates did not allow for incorporation of the boundary condition $\phi(W)=0$, which may account for the difference in that curve. 
 
 	\begin{figure}
 		\includegraphics[width=7in]{analytic_vs_numerical}
@@ -237,6 +237,8 @@
 		\end{centering}
 	\end{figure}
 
+	We have also examined this solution analytically in different coordinate systems, specifically cartesian, cylindrical, and spherical. The output of these solutions is easily seen in figure \ref{fig:different coordinate systems}. Of note, the derivation for spherical coordinates did not allow for incorporation of the boundary condition $\phi(W)=0$, which may account for the difference in that curve. A plot was generated showing the predicted flux from the numeric solutions for each of the three coordinate systems. In figure \ref{fig:numeric coordinate systems} we see that the coordinate systems vary when close to $x=0$ but converge closer to $x=W$.
+
 	\begin{figure}
 		\begin{centering}
 		\includegraphics[width=4in]{different_coordinate_systems}
@@ -244,9 +246,19 @@
 		\label{fig:different coordinate systems}
 		\end{centering}
 	\end{figure}
+
+	\begin{figure}
+		\begin{centering}
+		\includegraphics[width=4in]{different_coordinate_systems_numeric}
+		\caption{Numeric Solution for Cartesian, Cylindrical, and Spherical Coordinates}
+		\label{fig:numeric coordinate systems}
+		\end{centering}
+	\end{figure}
+
+	From figure \ref{fig:numeric coordinate systems} it is easy to see parallels with the situations in which one might select these coordinate systems: cartesian for a plane source, cylindrical for a line source, and spherical for a point source.
 	
 	\section{Conclusions}
-	We provide an analysis of a simplified one-group, one-dimensional neutron diffusion in a non-multiplying medium. Solutions are compared in assorted coordinate systems and for numerical approximation of the analytic solution. The various approaches to this problem produced similar but slightly different solutions, implying that careful choice of methodology is necessary in solving similar problems. 
+	We provide an analysis of a simplified one-group, one-dimensional neutron diffusion in a non-multiplying medium. Solutions are compared in assorted coordinate systems and for numerical approximation of the analytic solution. The various approaches to this problem produced similar but slightly different solutions, implying that careful choice of methodology is necessary in solving similar problems. For simple problems, such as the case with a single source at $x=0$, the analytical method was less computationally expensive, especially as the number of nodes increased to allow for convergence by the numerical method. It is easy to see the power of the numeric, discrete approach as the system being examined grows in complexity, as demonstrated in the case where a second source was placed at $x=W$. 
 
 
 
