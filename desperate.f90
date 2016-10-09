@@ -23,7 +23,7 @@ n=n
 allocate (A(n,n),b(n),ipiv(n))
 A=0
 b=0
-print *,"What is you geometry? cartesian=1, cylindrical=2, spherical=3"
+print *,"What is your geometry? cartesian=1, cylindrical=2, spherical=3"
 read *,G
 print *,"Relative Strength of other side of slab (ie f*s) f=?"
 read *,f
