@@ -167,6 +167,7 @@
 		\frac{-D_m}{\Delta x^2} \phi_1 + \left( \frac{D}{\Delta x^2} + \frac{1}{2} \Sigma_a \right) \phi_0 = 0
 	\end{align*}
 	This gives a final matrix $\opmat{A}$ (for $n=5$ nodes):
+	
 	\[
 	\begin{bmatrix}[1.5]
 		\frac{D_m}{\Delta x^2} + \frac{1}{2}\Sigma_a & \frac{-D_m}{\Delta x^2} & 0 & 0 \\
@@ -176,11 +177,46 @@
 	\end{bmatrix}
 	\]
 
-	Additional analysis was performed assuming the presence of a source of strength $f \times S$ located at $x=W$. This produced an operator with matrix values
-	\begin{align*}
-		a_{\left( n, n \right)} &= BLOOB \\
-		a_{\left( n, n-1 \right)} &= BLOOOP
-	\end{align*}
+	Additional analysis was performed assuming the presence of a source of strength $f \times S$ located at $x=W$. This produced an operator with matrix values (this time for the $n=4$ case):
+
+	\[
+	\begin{bmatrix}[1.5]
+		\frac{D_m}{\Delta x^2} + \frac{1}{2}\Sigma_a & \frac{-D_m}{\Delta x^2} & 0 & 0 \\
+		\frac{-D_m}{\Delta x^2} & \frac{2D_m}{\Delta x^2} + \Sigma_a & \frac{-D_m}{\Delta x^2} & 0 \\
+		0 & \frac{-D_m}{\Delta x^2} & \frac{2D_m}{\Delta x^2} + \Sigma_a & \frac{-D_m}{\Delta x^2} \\
+		0 & 0 & \frac{-D_m}{\Delta x^2} & \frac{D_m}{\Delta x^2} + \frac{1}{2}\Sigma_a
+	\end{bmatrix}
+	\]
+
+	In this case the source vector, $\vec{S}$, would follow the form:
+
+	\[
+	\begin{bmatrix}[1.5]
+		\frac{S}{2\Delta x} & 0 & \dots & 0 & f \frac{S}{2\Delta x}
+	\end{bmatrix}
+	\]
+
+	Similar derivations (attached) were performed for cylindrical and spherical coordinate systems. The operators for these (in the $n=4$ case) were, for cylindrical:
+
+	\[
+	\begin{bmatrix}[1.5]
+		\frac{D_m}{\Delta x^2} + \frac{1}{2}\Sigma_a & \frac{-D_m}{\Delta x^2}\left[ 1 + \frac{1}{2*i + 1} \right] & 0 & 0 \\
+		\frac{-D_m}{\Delta x^2}\left[ 1 - \frac{1}{2*i - 1} \right] & \frac{2D_m}{\Delta x^2} + \Sigma_a & \frac{-D_m}{\Delta x^2}\left[ 1 + \frac{1}{2*i + 1} \right] & 0 \\
+		0 & \frac{-D_m}{\Delta x^2}\left[ 1 - \frac{1}{2*i - 1} \right] & \frac{2D_m}{\Delta x^2} + \Sigma_a & \frac{-D_m}{\Delta x^2}\left[ 1 + \frac{1}{2*i + 1} \right] \\
+		0 & 0 & \frac{-D_m}{\Delta x^2}\left[ 1 - \frac{1}{2*i - 1} \right] & \frac{D_m}{\Delta x^2} + \frac{1}{2}\Sigma_a
+	\end{bmatrix}
+	\]
+
+	and for spherical:
+
+	\[
+	\begin{bmatrix}[1.5]
+		\frac{D_m}{\Delta x^2} + \frac{1}{2}\Sigma_a & \frac{-D_m}{\Delta x^2}\left[ 1 + \frac{2}{2*i + 1} \right] & 0 & 0 \\
+		\frac{-D_m}{\Delta x^2}\left[ 1 - \frac{2}{2*i - 1} \right] & \frac{2D_m}{\Delta x^2} + \Sigma_a & \frac{-D_m}{\Delta x^2}\left[ 1 + \frac{2}{2*i + 1} \right] & 0 \\
+		0 & \frac{-D_m}{\Delta x^2}\left[ 1 - \frac{2}{2*i - 1} \right] & \frac{2D_m}{\Delta x^2} + \Sigma_a & \frac{-D_m}{\Delta x^2}\left[ 1 + \frac{2}{2*i + 1} \right] \\
+		0 & 0 & \frac{-D_m}{\Delta x^2}\left[ 1 - \frac{2}{2*i - 1} \right] & \frac{D_m}{\Delta x^2} + \frac{1}{2}\Sigma_a
+	\end{bmatrix}
+	\]
 
 	\section{Results}
 	A Fortran program was developed to implement the discrete solution to the transport equation from section \ref{ssec:numerical}. The source code is included as an attachment to this report. The numerical solution produced values that converged as the number of nodes increased, showing clearly exponential behavior as $n\rightarrow\infty$. This behavior can be seen in figures \ref{fig:numerical_vs_analytical} and \ref{fig:many nodes one chart}. 
