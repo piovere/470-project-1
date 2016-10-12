@@ -46,13 +46,13 @@ if (G .eq. 1) then              !----------CARTESIAN-------------!
    A(n,n) = 0.5*sigma_a+D/(dx**2.0)
    A(n,n-1) =-D/(dx**2.0)
 
-   C =  b(1)*L/(2.0*D*(1.0+exp(-2.0*w/L)))
+   !C =  b(1)*L/(2.0*D*(1.0+exp(-2.0*w/L)))
 
-   psi = C*(1-exp((-2.0*w)/L))
-   write(55, "(1e10.4)") psi
+   !psi = C*(1-exp((-2.0*w)/L))
+   !write(55, "(1e10.4)") psi
  
-   psi = C*(exp(-dx/L)-exp((dx-2.0*w)/L))
-   write(55, "(1e10.4)") psi
+   !psi = C*(exp(-dx/L)-exp((dx-2.0*w)/L))
+   !write(55, "(1e10.4)") psi
 
 
    do i=2 , n-1
@@ -61,11 +61,22 @@ if (G .eq. 1) then              !----------CARTESIAN-------------!
       A(i,i+1) = -D/(dx**2.0)
       A(i,i-1) = -D/(dx**2.0)
 
-      x = dx*i
-      psi = C*(exp(-x/L)-exp((x-2.0*w)/L))
-      write(55, "(1e10.4)") psi
+      !x = dx*i
+      !psi = C*(exp(-x/L)-exp((x-2.0*w)/L))
+      !write(55, "(1e10.4)") psi
    enddo
 
+   ! guess initial b vector
+   ! guess initial k
+   ! 
+   ! while (k_error > min_error OR phi_error > min_error) and i < MAX_ITERATIONS:
+   !     b_prime = A_inverse * CONSTANTS * 1/k * b
+   !     k_prime = magnitude(b_prime) / magnitude(b)
+   !     k_error = error_function(k, k_prime)
+   !     b_error = error_function(b, b_prime)
+   !     k = k_prime
+   !     b = b_prime
+   ! VOMIT RESULTS
 
 elseif (G .eq. 3) then           !------------SPHERE--------------------!
 
