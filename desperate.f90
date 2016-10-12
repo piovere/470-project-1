@@ -68,7 +68,7 @@ if (G .eq. 1) then              !----------CARTESIAN-------------!
 
    ! guess initial b vector
    ! guess initial k
-   ! 
+   ! i = 0
    ! while (k_error > min_error OR phi_error > min_error) and i < MAX_ITERATIONS:
    !     b_prime = A_inverse * CONSTANTS * 1/k * b
    !     k_prime = magnitude(b_prime) / magnitude(b)
@@ -76,6 +76,7 @@ if (G .eq. 1) then              !----------CARTESIAN-------------!
    !     b_error = error_function(b, b_prime)
    !     k = k_prime
    !     b = b_prime
+   !     i++
    ! VOMIT RESULTS
 
 elseif (G .eq. 3) then           !------------SPHERE--------------------!
