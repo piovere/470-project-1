@@ -124,7 +124,7 @@ else
    print *,"Thats not a valid coordinate system"
 endif
 
-b=b/(2.0*dx)
+!b=b/(2.0*dx)
 !print *,"Elements of the b vector ?"
 !read *,b
 
