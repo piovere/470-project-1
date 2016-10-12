@@ -133,6 +133,19 @@ b=b/(2.0*dx)
 call DGETRF(n, n, A, n, ipiv, info)
 if (info /= 0) stop 'Matrix is numerically singular!'
 
+   ! guess initial b vector
+   ! guess initial k
+   ! i = 0
+   ! while (k_error > min_error OR phi_error > min_error) and i < MAX_ITERATIONS:
+   !     b_prime = A_inverse * CONSTANTS * 1/k * b
+   !     k_prime = magnitude(b_prime) / magnitude(b)
+   !     k_error = error_function(k, k_prime)
+   !     b_error = error_function(b, b_prime)
+   !     k = k_prime
+   !     b = b_prime
+   !     i++
+   ! VOMIT RESULTS
+
 ! DGETRS - solve a system of linear equations A * X = B or 
 ! A' * X = B with a general N-by-N matrix A using the LU 
 ! See: http://www.netlib.org/lapack/explore-html/d6/d49/dgetrs_8f.html
