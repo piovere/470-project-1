@@ -66,19 +66,6 @@ if (G .eq. 1) then              !----------CARTESIAN-------------!
       !write(55, "(1e10.4)") psi
    enddo
 
-   ! guess initial b vector
-   ! guess initial k
-   ! i = 0
-   ! while (k_error > min_error OR phi_error > min_error) and i < MAX_ITERATIONS:
-   !     b_prime = A_inverse * CONSTANTS * 1/k * b
-   !     k_prime = magnitude(b_prime) / magnitude(b)
-   !     k_error = error_function(k, k_prime)
-   !     b_error = error_function(b, b_prime)
-   !     k = k_prime
-   !     b = b_prime
-   !     i++
-   ! VOMIT RESULTS
-
 elseif (G .eq. 3) then           !------------SPHERE--------------------!
 
    A(1,1) = (0.5*sigma_a)+(D/(dx**2.0))
