@@ -133,18 +133,58 @@ endif
 call DGETRF(n, n, A, n, ipiv, info)
 if (info /= 0) stop 'Matrix is numerically singular!'
 
-   ! guess initial b vector
-   ! guess initial k
-   ! i = 0
-   ! while (k_error > min_error OR phi_error > min_error) and i < MAX_ITERATIONS:
-   !     b_prime = A_inverse * CONSTANTS * 1/k * b
-   !     k_prime = magnitude(b_prime) / magnitude(b)
-   !     k_error = error_function(k, k_prime)
-   !     b_error = error_function(b, b_prime)
-   !     k = k_prime
-   !     b = b_prime
-   !     i++
-   ! VOMIT RESULTS
+! guess initial b vector
+do i=1, n
+  b(i) = 1.0
+enddo
+
+! guess initial k
+real(real64) :: k=0
+
+! j = 0
+integer :: i, MAX_ITERATIONS
+real(real64) :: k_error, b_error
+real(real64) :: m, m_old ! container for all our magnitude functions
+real(real64) :: k_prime
+real(real64), allocatable :: b_old(:)
+real(real64) :: min_error=0.01
+
+allocate (b_old(n))
+
+k_prime = k
+b_old = b
+
+i=0
+
+k_error = 1.0
+b_error = 1.0
+
+! while (k_error > min_error OR phi_error > min_error) and i < MAX_ITERATIONS:
+do while ((k_error > min_error .OR. b_error>min_error) .AND. i<MAX_ITERATIONS)
+  ! don't throw away old b
+  b_old = b
+
+  ! don't throw away old k
+  k_old = k
+
+  ! b_prime = A_inverse * k * b
+  call DGETRS('N', n, 1, A, n, ipiv, k*b, n, info)
+
+  ! k_prime = magnitude(b) / magnitude(b_old)
+  call magnitude(b, n, m)
+  call magnitude(b_old, n, m_old)
+  k = m / m_old
+
+  ! k_error = error_function(k, k_prime)
+  call error(k_old, k, k_error)
+
+  ! b_error = error_function(b, b_prime)
+  ! k = k_prime
+  ! b = b_prime
+  ! i++
+  i = i+1
+enddo
+! VOMIT RESULTS
 
 ! DGETRS - solve a system of linear equations A * X = B or 
 ! A' * X = B with a general N-by-N matrix A using the LU 
@@ -157,3 +197,23 @@ open( unit = 77, file= "desperate.dat")
 write(77, "(1e10.4)" ) b
 
 end program desperate
+
+subroutine magnitude(vector, n, m)
+  implicit none
+  real(real64) :: m=0.0 ! contains magnitude variable
+  integer :: n, i
+  real(real64) :: vector(n) ! the vector
+
+  do i=1,n
+    m = m+vector(i)*vector(i)
+  enddo
+
+  m=sqrt(m)
+end subroutine magnitude
+
+subroutine Error(truth, guess, e)
+  implicit none
+  real :: truth, guess, e
+
+  e = abs(truth-guess)/truth
+END subroutine Error
