@@ -1,5 +1,5 @@
-EXECUTABLE=desperate.exe
-SOURCES=desperate.f90
+EXECUTABLE=desperatev2.exe
+SOURCES=desperatev2.f90
 
 OBJECTS=$(SOURCES:.f90=.o)
 LDFLAGS=-llapack
