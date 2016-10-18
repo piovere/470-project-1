@@ -11,7 +11,8 @@
 
 
 
- Note: I've cleaned up the code that was in the desperate.f90 and put it in desperatev2.f90 (Still trying to think of a better name). Some problems with the code(Andrew, 10/18):
+ # Note:
+ I've cleaned up the code that was in the desperate.f90 and put it in desperatev2.f90 (Still trying to think of a better name). Some problems with the code(Andrew, 10/18):
 
 - It does output a bunch of warnings about type mismatch in the subroutines but it still makes an executable
 - The matrix elements are still the elements from the original code so we probably need to fix those
