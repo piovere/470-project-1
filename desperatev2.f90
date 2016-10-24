@@ -52,16 +52,16 @@ S=nusig
 S(1)=S(1)/2
 !--------------------------Matrix Declaration-----------------------------!
 
-   A(1,1) = (0.5*sigma_a)+(D/(dx**2.0))
+   A(1,1) = (0.5*sigma_a)+(D/(dx**2))
    A(1,2) = -D/(dx**2.0)
-   A(n,n) = sigma_a+2.0*D/(dx**2.0)
-   A(n,n-1) = -D/(dx**2.0)
+   A(n,n) = sigma_a+2.0*D/(dx**2)
+   A(n,n-1) = -D/(dx**2)
 
    do i=2 , n-1
 
-      A(i,i) = sigma_a+2.0*D/(dx**2.0)
-      A(i,i+1) = -D/(dx**2.0)
-      A(i,i-1) = -D/(dx**2.0)
+      A(i,i) = sigma_a+2.0*D/(dx**2)
+      A(i,i+1) = -D/(dx**2)
+      A(i,i-1) = -D/(dx**2)
 
    enddo
 
