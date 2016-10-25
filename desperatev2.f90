@@ -93,7 +93,7 @@ b_error = 1.0
 do while ((k_error .gt. min_error) .or. (b_error .gt. min_error)) 
 
   b=S*b/k
-
+ 
   b_old = b      ! don't throw away old b
   k_old = k      ! don't throw away old k
 
