@@ -16,7 +16,7 @@ real(real64)              :: sigma_a, D, dx, w, nusig  !Declared below
 !real(real64), parameter   :: pi=4.0*atan(1.0)
 
 !------------------------Used for Iteration loop--------------------------!
-integer :: j, MAX_ITERATIONS = 1000                
+integer :: j, width_j ,j_tot, MAX_ITERATIONS = 1000                
 real(real64), allocatable :: b_old(:)
 real(real64) :: k_error, b_error
 real(real64) :: m, m_old                            ! container for all our magnitude functions
@@ -33,6 +33,8 @@ open( unit = 77, file= "Numeric.dat")
 
 print *,"Number of nodes? "
 read *,n
+print *,'Width?'
+read *,w
 n=n-1
 allocate (A(n,n),b(n),ipiv(n),b_old(n),S(n))
 
@@ -42,9 +44,10 @@ sigma_a = 0.15               ! Sigma absorb
 nusig = 0.157                ! Sigma fission*nu
 D=3.62E-2                    ! Sigma Transport
 D = 1.0/(3.0*D)              ! Diffusion Coef
+j_tot = 0
+width_j=0
 
-w=10                      ! Slab size
-dx = w/n                     ! Step Size
+100 dx = w/n                     ! Step Size
 A=0
 b=0
 
@@ -127,10 +130,29 @@ do while ((k_error .gt. min_error) .or. (b_error .gt. min_error))
   j = j+1        ! i++
 enddo
 
+j_tot=j_tot+j
 
 
-! VOMIT RESULTS
-print *,'Number of iterations until convergence:  ', j
+!-------------------------width adjustments for k=1-----------------------!
+  if(k .lt. 1.0-min_error)then
+     w=1.1*w
+    width_j=width_j+1
+     goto 100
+  else if(k .gt. 1.0+min_error)then  
+     w=0.9*w
+    width_j=width_j+1
+     goto 100
+  else
+     print *,'Number of width adjustments:',width_j
+  endif
+
+  do i=1,n 
+    mag=mag+b(i)
+  enddo
+
+
+!-------------------------VOMIT RESULTS-----------------------------------!
+print *,'Number of iterations until convergence:  ', j_tot
 if (j .eq. MAX_ITERATIONS) print *,'WHAT HAVE YOU DONE'
 write(77, "(1e10.4)" ) b
 write(77, "(1e10.4)" ) 0.0
