@@ -11,10 +11,10 @@ Lorem ipsum dolor simet
 \subsection{Numerical Approximation} \label{ssec:numerical}
 	It is rare to be faced with a design that allows for an analytical solution. Fortunately, numerical analysis methods exist that allow for approximation of the analytical solution. By dividing our hypothetical medium into discrete sections with nodes at the boundaries between these sections, it is possible to express the flux vector with equation \ref{eqn:linalg_flux}:
 	\begin{equation}
-		\opmat{A} \vec{\phi} = \vec{S}
+		\opmat{A} \vec{\phi} = \opmat{F} \vec{\phi}
 		\label{eqn:linalg_flux}
 	\end{equation}
-	where $\vec{\phi}$ is the flux at each node. The operator $\opmat{A}$ can be derived using the two-node approximation of the  second derivative formula:
+	where $\vec{\phi}$ is the flux at each node. The operator $\opmat{F}$ describes the source of the multiplying medium.  Initial guesses of 1 were used forThe operator $\opmat{A}$ can be derived using the two-node approximation of the  second derivative formula:
 	
 	\begin{equation*}
 		\left. \pdv[2]{\phi}{x} \right|_i \approx \frac{\phi_{i-1} - 2\phi_i + \phi_{i+1}}{\Delta x^2}
@@ -57,24 +57,64 @@ Lorem ipsum dolor simet
 		-D_m \frac{\phi_1 - \phi_0}{\Delta x^2}  + \frac{1}{2} \Sigma_a \phi_0 =  \frac{1}{k} \nu \Sigma^m_f \phi_0 \frac{1}{2} \\
 		\frac{-D_m}{\Delta x^2} \phi_1 + \left( \frac{D}{\Delta x^2} + \frac{1}{2} \Sigma_a \right) \phi_0 = \frac{1}{2k} \nu \Sigma^m_f \phi_0
 	\end{align*}
-	This gives a final matrix $\opmat{A}$ (for $n=5$ nodes):
+	This gives a final matrix $\opmat{A}$ (for N nodes):
 	\[
 	\begin{bmatrix}[1.5]
-		\frac{D_m}{\Delta x^2} + \frac{1}{2}\Sigma_a & \frac{-D_m}{\Delta x^2} & 0 & 0 \\
-		\frac{-D_m}{\Delta x^2} & \frac{2D_m}{\Delta x^2} + \Sigma_a & \frac{-D_m}{\Delta x^2} & 0 \\
-		0 & \frac{-D_m}{\Delta x^2} & \frac{2D_m}{\Delta x^2} + \Sigma_a & \frac{-D_m}{\Delta x^2} \\
-		0 & 0 & \frac{-D_m}{\Delta x^2} & \frac{2D}{\Delta x^2} + \Sigma_a
+		\frac{D_m}{\Delta x^2} + \frac{1}{2}\Sigma_a & - \frac{-D_m}{\Delta x^2} & 0 & 0 & \dots & 0\\
+		- \frac{-D_m}{\Delta x^2} & \frac{2D_m}{\Delta x^2} + \Sigma_a & - \frac{-D_m}{\Delta x^2} & 0 & \dots & 0 \\
+		0 & - \frac{-D_m}{\Delta x^2} & \frac{2D_m}{\Delta x^2} + \Sigma_a & - \frac{-D_m}{\Delta x^2} & \dots & 0 \\
+		0 & 0 & - \frac{-D_m}{\Delta x^2} & \frac{2D}{\Delta x^2} + \Sigma_a & \dots & 0 \\
+		\dots & \dots & \dots \dots & \frac{D_m}{\Delta x^2} + \frac{1}{2}\Sigma_a & - \frac{-D_m}{\Delta x^2} \\
+		0 & \dots & 0 & 0 - \frac{-D_m}{\Delta x^2} & \frac{2 D_m}{\Delta x^2} + \frac{1}{2}\Sigma_a
 	\end{bmatrix}
 	\]
 
 
-This gives a final matrix $\opmat{F}$ (for $n=5$ nodes):
+This gives a final matrix $\opmat{F}$ (for N nodes):
 	\[
 	\begin{bmatrix}[1.5]
 		\frac{1}{2k} \nu \Sigma_f \phi_0  \\
 		\frac{1}{k} \nu \Sigma_f \phi_1  \\
 		\frac{1}{k} \nu \Sigma_f \phi_2  \\
 		\frac{1}{k} \nu \Sigma_f \phi_3  \\
+		\dots \\
+		\frac{1}{k} \nu \Sigma_f \phi_{N-1}
+	\end{bmatrix}
+	\]
+
+For cylindrical coordinates, the following equation was used to derive $\opmat{A}$:
+
+\begin{equation*}
+		-D_m \frac{d^2 \phi}{d r^2} + \frac{1}{r} \frac{d \phi}{dx} + \Sigma_a \phi =   \frac{1}{k} \nu \Sigma^m_f \phi
+	\end{equation*}
+	
+The resulting matrix $\opmat{A}$ (for N nodes) is:
+
+\[
+	\begin{bmatrix}[1.5]
+		\frac{1}{2} \Sigma_a + \frac{D_m}{(2i-1)\Delta r^2} +\frac{D_m}{r^2} & -\frac{D_m}{(2i-1)\Delta r^2} - \frac{D_m}{r^2} & 0 & \dots & 0 \\
+		\frac{-D_m}{\Delta r^2} \left( 1 + \frac{1}{2i-1} \right) & \frac{2D_m}{\Delta r^2} + \Sigma_a & - \frac{-D_m}{\Delta r^2} \left( 1 - \frac{1}{2i-1} \right) & \dots & 0 \\
+		0 & - \frac{-D_m}{\Delta r^2} \left( 1 - \frac{1}{2i-1} \right) & \frac{2D_m}{\Delta r^2} + \Sigma_a & \frac{-D_m}{\Delta r^2} \left( 1 - \frac{1}{2i-1} \right) & 0\\
+		\dots & \dots \dots & \frac{2D_m}{\Delta r^2} + \Sigma_a & 0 \\
+		0 & 0 & 0 & -\frac{-D_m}{\Delta r^2} \left( 1 - \frac{1}{2i-1} \right) & \frac{2D_m}{\Delta r^2} + \Sigma_a
+	\end{bmatrix}
+	\]
+
+For spherical coordinates, the following equation was used to derive $\opmat{A}$:
+
+\begin{equation*}
+		-D_m \frac{d^2 \phi}{d r^2} + \frac{2}{r} \frac{d \phi}{dx} + \Sigma_a \phi =   \frac{1}{k} \nu \Sigma^m_f \phi
+	\end{equation*}
+
+The resulting matrix $\opmat{A}$ (for N nodes) is:
+
+\[
+	\begin{bmatrix}[1.5]
+		\frac{1}{2} \Sigma_a + \frac{2 D_m}{(2i-1)\Delta r^2} +\frac{D_m}{r^2} & -\frac{D_m}{(2i-1)\Delta r^2} - \frac{2 D_m}{r^2} & 0 & \dots & 0 \\
+		\frac{-D_m}{\Delta r^2} \left( 1 + \frac{2}{2i-1} \right) & \frac{2D_m}{\Delta r^2} + \Sigma_a & - \frac{-D_m}{\Delta r^2} \left( 1 - \frac{2}{2i-1} \right) & \dots & 0 \\
+		0 & \frac{-D_m}{\Delta r^2} \left( 1 - \frac{2}{2i-1} \right) & \frac{2D_m}{\Delta r^2} + \Sigma_a & \frac{-D_m}{\Delta r^2} \left( 1 - \frac{2}{2i-1} \right) & 0\\
+		\dots & \dots \dots & \frac{2D_m}{\Delta r^2} + \Sigma_a & 0 \\
+		0 & 0 & 0 & -\frac{-D_m}{\Delta r^2} \left( 1 - \frac{2}{2i-1} \right) & \frac{2D_m}{\Delta r^2} + \Sigma_a
 	\end{bmatrix}
 	\]
 
