@@ -30,12 +30,12 @@ Lorem ipsum dolor simet
 		-D_m \left( \frac{\phi_{i+1} - \phi_i}{\Delta x} - \frac{\phi_{i} - \phi_{i-1}}{\Delta x} \right) &+
 			\int_{x_i - \frac{\Delta x}{2}}^{x_i + \frac{\Delta x}{2}} \Sigma_a \phi dx = \frac{1}{k} \nu \Sigma^m_f \phi_i \left[ \left( x_i + \frac{\Delta x}{2} \right) - \left( x_i - \frac{\Delta x}{2} \right) \right] \\
 		-D_m \left( \frac{\phi_{i+1} - \phi_i}{\Delta x} - \frac{\phi_{i} - \phi_{i-1}}{\Delta x} \right) &+
-			\Sigma_a \phi_i \Delta x = \frac{1}{k} \nu \Sigma^m_f \phi_i \Delta x
+			\Sigma_a \phi_i \Delta x = \frac{1}{k} \nu \Sigma^m_f \phi_i \Delta x \\
 		\intertext{Dividing each term by $\Delta x$ gives:}
 		\left( \frac{-D_m}{\Delta x^2} \right) \phi_{i-1} + \left( \frac{2D_m}{\Delta x^2} + \Sigma_a \right)\phi_i + \left( \frac{-D_m}{\Delta x^2} \right) \phi_{i+1} = \frac{1}{k} \nu \Sigma^m_f \phi_i
 	\end{align*}
 	From this we see that our operator $\opmat{A}$ will have non-corner terms and right bottom corner terms:
-	\[
+	**
 	\begin{bmatrix}[1.5]
 		\hdotsfor{5} \\
 		\frac{-D_m}{\Delta x^2} & \frac{2D_m}{\Delta x^2} + \Sigma_a & \frac{-D_m}{\Delta x^2} & 0 & \dots \\
@@ -43,7 +43,7 @@ Lorem ipsum dolor simet
 		& & \ddots & & \\
 		\dots & 0 & \frac{-D_m}{\Delta x^2} & \frac{2D_m}{\Delta x^2} + \Sigma_a & \frac{-D_m}{\Delta x^2} \\
 	\end{bmatrix}
-	\]
+	**
 	We then solve for our top row using the boundary condition in equation \ref{eqn:leftboundary}: 
 	\begin{align*}
 		-D_m \frac{\phi_1 - \phi_0}{\Delta x} + D_m \left. \dv{\phi}{x} \right|_0 + \int_0^{\Delta x / 2} 
