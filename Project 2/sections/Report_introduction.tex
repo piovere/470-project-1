@@ -4,4 +4,55 @@
 
 Lorem ipsum dolor simet
 
+Proving the capabilities and safety of a reactor design requires effective modeling of the neutron flux in the core (expressed in equation \ref{eqn:transport}). For real cores, however, this is impossible, and must be first simplified, then discretized to provide the solution for a representative mesh. Certain simplifications can be applied to help make the problem easier to solve, since it allows the time dependent terms to be removed.
+
+1) Isotropic assumption: ignoring the direction of the incoming neutron. This effectively drops all terms involving Ωˆ
+2) Monoenergetic assumption: ignoring the energy variance of the neutrons. This means that a single set of cross sections
+can be used and allows us to ignore neutrons scattering into and out of the domain of interest
+3) Homogeneity assumption: assuming that all core materials are evenly mixed throughout the volume of interest. This
+allows us to ignore discrete boundaries between materials
+4) Steady-state assumption: assuming that the system has been in this state for a long period and that no transients occur.
+
+
+
+	For this project we have analyzed a simplified, monoenergetic, source through a homogeneous multiplying medium in one dimension. These assumptions simplify the transport equation to that presented in equation \ref{eqn:simplified_diffusion}.
+
+	In the following sections, we will first describe the terms in equation \ref{eqn:simplified_diffusion}, then provide an analytical solution. We will also provide an analysis of the accuracy of the analysis as a function of the number of nodes. Finally, we will analzye the solution for different coordinate systems to equation \ref{eqn:simplified_diffusion}.  Cartesian , cylindrical and spherical are the systems of interest.
+
+	%\begin{strip}
+	\begin{equation}
+		\pdv{n}{t} + v \hat{\Omega} \cdot \nabla n + v \Sigma_t n \left( \mathbf{r}, E^\prime, \hat{\Omega}, t \right) = \\ \int_{4\pi} d \hat{\Omega} ^\prime \int_0^{\infty} dE ^\prime v^\prime \Sigma_s\left( E ^\prime \rightarrow E, \hat{\Omega} ^\prime \rightarrow \hat{\Omega} \right) n\left( \mathbf{r}, E ^\prime, \hat{\Omega} ^\prime, t \right) + s\left( \mathbf{r}, E, \hat{\Omega}, t \right)
+		\label{eqn:transport}
+	\end{equation}
+	%\end{strip}
+  
+  \begin{equation}
+		-D_m \dv[2]{\phi}{x} + \Sigma^m_a \phi = \frac{1}{k} \nu \Sigma^m_f \phi
+		\label{eqn:simplified_diffusion}
+	\end{equation}
+  
+  	\begin{table*}
+		\begin{center}
+		\begin{tabular}{ c c c c c }
+			\hline
+			\textit{Material} & $ \Sigma_{tr}(\si{cm^{-1}}) $ & $ \Sigma_a (\si{cm^{-1}}) $ & $ \nu \Sigma_f (\si{cm^{-1}}) $ & \textit{Relative Absorption} \\
+			\hline
+			\ce{H} & \num{1.79e-2} & \num{8.08e-3} & 0 & \num{0.053} \\
+			\ce{O} & \num{7.16e-3} & \num{4.90e-6} & \num{0} & \num{0}\\
+			\ce{Zr} & \num{2.91e-3} & \num{7.01e-4} & \num{0} & \num{0.005} \\
+			\ce{Fe} & \num{9.46e-4} & \num{3.99e-3} & \num{0} & \num{0.026} \\
+			\ce{^{235}U} & \num{3.08e-4} & \num{9.24e-2} & \num{0.145} & \num{0.602} \\
+			\ce{^{238}U} &\num{6.95e-3} & \num{1.39e-2} & \num{1.20e-2} & \num{0.091} \\
+			\ce{^{10}B} & \num{8.77e-6} & \num{3.41e-2} & \num{0} & \num{0.223} \\
+			\hline
+			& \num{3.62e-2} & \num{0.1532} & \num{0.1570} & \num{1.000} \\
+			\hline
+		\end{tabular}
+		\label{materials_table}
+		\caption{Macroscopic Cross Sections}
+		\end{center}
+	\end{table*}
+
+
+
 \end{document}
