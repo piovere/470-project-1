@@ -4,10 +4,13 @@
 
 Lorem ipsum dolor simet
 
-A Fortran program was developed to implement the discrete solution to the transport equation. The source code is included as an attachment to this report. The code uses \eqref{eq:inverted_matrix} to converge to the solution. And initial guess value for b is assumed ( We use $\overrightarrow{f}=1$ for all discrete points but any values could be used but convergence time will vary). Our b vector is then multiplied by the inverse (obtained using LU decompisition) of our A matrix describe in the Methodology section above. We then repeated the matrix multiplication with the newly obtained flux until the change upon iteration in the eigenvalues and eigenvectors is lower than some minimum error specificed.
+A Fortran program was developed to implement the discrete solution to the transport equation. The source code is included as an attachment to this report. The code uses \eqref{eq:inverted_matrix} to converge to the solution. And initial guess value for b is assumed ( We use $\overrightarrow{f}=1$ for all discrete points but any values could be used but convergence time will vary). Our b vector is then multiplied by the inverse (obtained using LU decomposition) of our A matrix describe in the Methodology section above. We then repeated the matrix multiplication with the newly obtained flux until the change upon iteration in the eigenvalues and eigenvectors is lower than some minimum error specified.
 
 
-In addition to this, the program also finds at what width the a material with the specific $\Sigma_f$ and $\Sigma_a$ is critical. It acheives this by nesting the loop described above into an additional loop which test if $k = 1 \pm error margin$  and slightly changes the width accordingly until $k$ converges to that value. Our numerical calcuation of the given parameters gave a critical width of 5.14 centimeters. 
+
+In addition to finding the flux profile of the slab, the program also finds at what width the material with a specific $\Sigma_f$ and $\Sigma_a$ is critical. It achieves this by nesting the loop described above into an additional loop which test if $k = 1 \pm error margin$  and slightly changes the width accordingly until $k$ converges to that value. 
+
+Our numerical calculation of the given parameters gave a critical width of 5.14 centimeters. 
 	
 
 
