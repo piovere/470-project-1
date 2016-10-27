@@ -2,9 +2,6 @@
 
 \begin{document}
 
-Lorem ipsum dolor simet
-
-\section{Methodology}
 	Equation \ref{eqn:simplified_diffusion} is a simplified description of neutron diffusion through a finite medium, similar to a point source travelling through a shielding material to a detector. The flux, therefore, depends on the transport cross section. This is accounted for in the term $D_m$, which is related to the transport coefficient by $D_m = 3 \Sigma_{tr}^{-1}$. Values for $\Sigma_{tr}$ for typical reactor materials are found in table \ref{materials_table}. 
 
 	
@@ -23,10 +20,10 @@ Lorem ipsum dolor simet
 	For non-edge nodes and the far right node, the derivation can be performed as follows:
 	\begin{align*}
 		-D_m \dv[2]{\phi}{x} &+ \Sigma_a \phi = \frac{1}{k} \nu \Sigma^m_f \phi \\
-		-D_m \int_{x_i - \frac{\Delta x}{2}}^{x_i + \frac{\Delta x}{2}} \dv[2]{\phi}{x} dx &+ 
-			\int_{x_i - \frac{\Delta x}{2}}^{x_i + \frac{\Delta x}{2}} \Sigma_a \phi dx = \int_{x_i - \frac{\Delta x}{2}}^{x_i + \frac{\Delta x}{2}} \dv[2] \frac{1}{k} \nu \Sigma^m_f \phi_i dx\\
+		-D_m \int_{x_i - \frac{\Delta x}{2}}^{x_i + \frac{\Delta x}{2}} \dv[2]{\phi}{x} \dd{x} &+ 
+			\int_{x_i - \frac{\Delta x}{2}}^{x_i + \frac{\Delta x}{2}} \Sigma_a \phi \dd{x} = \int_{x_i - \frac{\Delta x}{2}}^{x_i + \frac{\Delta x}{2}} \frac{1}{k} \nu \Sigma^m_f \phi_i \dd{x}\\
 		-D_m \left. \dv{\phi}{x} \right|_{x_i - \frac{\Delta x}{2}}^{x_i + \frac{\Delta x}{2}} &+ 
-			\int_{x_i - \frac{\Delta x}{2}}^{x_i + \frac{\Delta x}{2}} \Sigma_a \phi dx =  \frac{1}{k} \nu \Sigma^m_f \phi_i \int_{x_i - \frac{\Delta x}{2}}^{x_i + \frac{\Delta x}{2}} \dv[2] dx \\
+			\int_{x_i - \frac{\Delta x}{2}}^{x_i + \frac{\Delta x}{2}} \Sigma_a \phi dx =  \frac{1}{k} \nu \Sigma^m_f \phi_i \int_{x_i - \frac{\Delta x}{2}}^{x_i + \frac{\Delta x}{2}} \dd{x} \\
 		-D_m \left( \frac{\phi_{i+1} - \phi_i}{\Delta x} - \frac{\phi_{i} - \phi_{i-1}}{\Delta x} \right) &+
 			\int_{x_i - \frac{\Delta x}{2}}^{x_i + \frac{\Delta x}{2}} \Sigma_a \phi dx = \frac{1}{k} \nu \Sigma^m_f \phi_i \left[ \left( x_i + \frac{\Delta x}{2} \right) - \left( x_i - \frac{\Delta x}{2} \right) \right] \\
 		-D_m \left( \frac{\phi_{i+1} - \phi_i}{\Delta x} - \frac{\phi_{i} - \phi_{i-1}}{\Delta x} \right) &+
@@ -43,6 +40,9 @@ Lorem ipsum dolor simet
 		& & \ddots & & \\
 		\dots & 0 & \frac{-D_m}{\Delta x^2} & \frac{2D_m}{\Delta x^2} + \Sigma_a & \frac{-D_m}{\Delta x^2} \\
 	\end{bmatrix}
+	\begin{align*}
+		\vec{J}\left(0\right) = \eval{-D_m \dv{\phi}{x}}_0 \numberthis \label{eqn:leftboundary}
+	\end{align*}
 	**
 	We then solve for our top row using the boundary condition in equation \ref{eqn:leftboundary}: 
 	\begin{align*}
