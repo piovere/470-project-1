@@ -79,10 +79,15 @@ S(1)=S(1)/2
 ! guess initial b vector
 b = 10.0
 
+do i=1,n
+  do j=1,n
+    write (*,*) A(i,j)
+  enddo
+enddo
+
 do i=1, n
     b(i)=b(i)*S(i)
 enddo
-
 
 j=0
 
