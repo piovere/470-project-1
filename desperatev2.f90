@@ -115,6 +115,9 @@ do while ((k_error .gt. min_error) .or. (b_error .gt. min_error))
   enddo
   m_old=sqrt(mag)
 
+  !print *,'m: ', m
+  !print *,'m_old: ', m_old
+
   k =  m / m_old                  ! k_prime = magnitude(b) / magnitude(b_old)
       
 !  call error(k_old, k, k_error)  ! k_error = error_function(k, k_prime)
