@@ -68,6 +68,9 @@ S(1)=S(1)/2
 
    enddo
 
+! do i=1,n
+!     write(*,"(100g15.5)") ( A(i,j), j=1,n )
+! enddo
 
     !LU factorization of a general M-by-N matrix A
     ! See: http://www.netlib.org/lapack/explore-html/d3/d6a/dgetrf_8f.html
@@ -78,12 +81,6 @@ S(1)=S(1)/2
 !-------------------------------------------------------------------------!
 ! guess initial b vector
 b = 10.0
-
-do i=1,n
-  do j=1,n
-    write (*,*) A(i,j)
-  enddo
-enddo
 
 do i=1, n
     b(i)=b(i)*S(i)
@@ -102,23 +99,14 @@ do while ((k_error .gt. min_error) .or. (b_error .gt. min_error))
   b_old = b      ! don't throw away old b
   k_old = k      ! don't throw away old k
 
-  call DGETRS('N', n, 1, A, n, ipiv, b, n, info)  ! b_prime = A_inverse * k * b
+  call DGETRS('N', n, 1, A, n, ipiv, b, n, info)  ! b_prime = A_inverse * b
   if (info /= 0) stop 'Solution of the linear system failed!'
 
 !  call magnitude(b, n, m)
-  mag=0.0
-  do i=1,n
-    mag = mag+(b(i)**2)
-  enddo
-  m=sqrt(mag)
+  m=norm2(b)
 
 ! call magnitude(b_old, n, m_old)
-
-    mag=0.0
-  do i=1,n
-    mag = mag+(b_old(i)**2)
-  enddo
-  m_old=sqrt(mag)
+  m_old=norm2(b_old)
 
   !print *,'m: ', m
   !print *,'m_old: ', m_old
@@ -129,11 +117,9 @@ do while ((k_error .gt. min_error) .or. (b_error .gt. min_error))
   k_error = (k-k_old)/k
 
 !  call error(b_old, b, b_error)  ! b_error = error_function(b, b_prime)
-  mag=0
-  do i=1,n 
-    mag=mag+(b(i)-b_old(i))
-  enddo
-  b_error=mag/n
+b_error = norm2(b - b_old)
+
+  ! b = b / m
 
   j = j+1        ! i++
 enddo
@@ -167,24 +153,3 @@ write(77, "(1e10.4)" ) 0.0
 print *,'Critical width:  ', w
 end program desperatev2
 
-
-
-subroutine magnitude(vector, n, mag)
-  implicit none
-  real :: mag ! contains magnitude variable
-  integer :: n, i
-  real, dimension (1:n) :: vector ! the vector
-  mag=0.0
-  do i=1,n
-    mag = mag+(vector(i)*vector(i))
-  enddo
-
-  mag=sqrt(mag)
-end subroutine magnitude
-
-subroutine Error(truth, guess, e)
-  implicit none
-  real :: truth, guess, e
-
-  e = (truth-guess)/truth
-END subroutine Error
