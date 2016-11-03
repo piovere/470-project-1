@@ -68,6 +68,8 @@ S(1)=S(1)/2
 
    enddo
 
+! Pretty matrix printing
+! From http://jblevins.org/log/array-write
 ! do i=1,n
 !     write(*,"(100g15.5)") ( A(i,j), j=1,n )
 ! enddo
