@@ -1,0 +1,60 @@
+\documentclass[10pt,peerreviewca]{IEEEtran}
+\usepackage{subfiles}
+\usepackage{siunitx}
+\usepackage{physics}
+\usepackage{amsmath}
+\usepackage{cuted}
+\usepackage{graphicx}
+\usepackage[version=4]{mhchem}
+\graphicspath{ {../images/}{images/} }
+
+\newcommand{\e}{\mathrm{e}}
+\newcommand{\numberthis}{\addtocounter{equation}{1}\tag{\theequation}}
+\newcommand{\opmat}[1]{\mathbf{#1}}
+
+% Some voodoo to fix matrix spacing
+\makeatletter
+\renewcommand*\env@matrix[1][\arraystretch]{%
+  \edef\arraystretch{#1}%
+  \hskip -\arraycolsep
+  \let\@ifnextchar\new@ifnextchar
+  \array{*\c@MaxMatrixCols c}}
+\makeatother
+
+\author{
+	Lee, Seungsup
+	\and
+	Miller, Dory
+	\and
+	Payant, Andrew
+	\and
+	Powers-Luhn, Justin
+	\and
+	Zhang, Fan
+}
+
+\title{Nuclear Reactor Theory Project \#2\\Group \#3}
+
+\date{ }
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction \& Background}
+
+\subfile{sections/Report_introduction}
+
+\section{Methodology}
+
+\subfile{sections/Report_methodology}
+
+\section{Results}
+
+\subfile{sections/Report_results}
+
+\section{Conclusions}
+
+\subfile{sections/Report_conclusions}
+
+\end{document}
