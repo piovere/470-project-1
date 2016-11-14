@@ -1,5 +1,11 @@
 # 470-project-1
 
+
+Bfeawfewafeaw
+B
+
+i
+
 ## To Do ##
 - Implement pseudocode (JR, 10/12)
 - Are the corner terms for the A matrix correct? (class, 10/13)
