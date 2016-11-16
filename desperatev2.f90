@@ -21,7 +21,7 @@ real(real64), allocatable :: b_old(:)
 real(real64) :: k_error, b_error
 real(real64) :: m, m_old                            ! container for all our magnitude functions
 real(real64) :: k_old
-real(real64) :: min_error=0.001
+real(real64) :: min_error=0.0001
 real(real64) :: k=1                                 ! guess initial k
 
 real(real64) :: mag 
