@@ -152,6 +152,7 @@ print *,'Number of iterations until convergence:  ', j_tot
 if (j .eq. MAX_ITERATIONS) print *,'WHAT HAVE YOU DONE'
 write(77, "(1e10.4)" ) b
 write(77, "(1e10.4)" ) 0.0
+print *, 'Final k value: ', k
 print *,'Critical width:  ', w
 end program desperatev2
 
