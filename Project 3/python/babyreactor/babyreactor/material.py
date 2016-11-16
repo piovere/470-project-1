@@ -72,10 +72,14 @@ class Material(object):
     def width(self, width):
         self._width = width
 
-    def matrix(self, nodes):
+    def matrix(self, nodes=None, width=None):
         """The matrix that operates on the flux in the material
 
         Will be of size (n * n) where n = nodes - 1
         """
+        if nodes is None:
+            nodes = 5
+        if width is None:
+            width = self.width
         sections = nodes - 1
         return np.eye(sections)
