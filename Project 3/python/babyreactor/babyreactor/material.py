@@ -15,6 +15,7 @@ class Material(object):
         self._absorption = 0
         self._fission = 0
         self._width = 0
+        self._transport = 0
 
     @property
     def scattering(self):
@@ -55,6 +56,19 @@ class Material(object):
     @absorption.setter
     def absorption(self, absorption):
         self._absorption = absorption
+
+    @property
+    def transport(self):
+        """Transport cross sections
+
+        This should be a length-g array where g is the number
+        of energy groups.
+        """
+        return self._transport
+
+    @transport.setter
+    def transport(self, transport):
+        self._transport = transport
 
     @property
     def width(self):
