@@ -119,7 +119,7 @@ do while ((k_error .gt. min_error) .or. (b_error .gt. min_error))
   k_error = (k-k_old)/k
 
 !  call error(b_old, b, b_error)  ! b_error = error_function(b, b_prime)
-b_error = norm2(b - b_old)
+b_error = maxval(b - b_old)
 
   ! b = b / m
 
