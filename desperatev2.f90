@@ -131,10 +131,12 @@ j_tot=j_tot+j
 
 !-------------------------width adjustments for k=1-----------------------!
   if(k .lt. 1.0-min_error)then
+     print *,'width: ', w
      w=1.1*w
     width_j=width_j+1
      goto 100
-  else if(k .gt. 1.0+min_error)then  
+  else if(k .gt. 1.0+min_error)then
+     print *,'width: ', w  
      w=0.9*w
     width_j=width_j+1
      goto 100
