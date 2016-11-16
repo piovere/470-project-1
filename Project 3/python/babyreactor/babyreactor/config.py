@@ -30,3 +30,9 @@ reflector_absorption = np.array(
 reflector_transport = np.array(
     [0.20608, 0.60215, 0.56830, 1.21110]
 )
+
+fuel_scattering = np.array(
+    [
+        []
+    ]
+)
