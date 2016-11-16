@@ -6,10 +6,6 @@ Lots of awesome things going on here
 import numpy as np
 
 
-FUEL_NODES = 10
-REFLECTOR_NODES = 10
-ENERGY_GROUPS = 4
-
 class Material(object):
     """Material for a reactor
     """
