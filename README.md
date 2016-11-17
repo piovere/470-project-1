@@ -23,22 +23,30 @@
 
 
 # Presentation
+
 ## (not this presentation) Abstract
+
 ## Introduction
 - Diffusion
 - Problem
+
 ## Diffusion
 - Analytical calculation
 - Numerical
     - System of equations
     - Matrix
     - Alg. err?
+
 ## Results
 - plots
 - tables
 - discussion
+
 ## EC Results
+
 ## Conclusions
 - What we learned in the project
+
 ## Who contributed what
+
 ## Appendices
