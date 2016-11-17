@@ -2,7 +2,8 @@
 
 ## To Do ##
 - [ ] Normalize flux vector in project 2
-- [ ] 
+- [ ] Node-by-node checking of flux convergence
+- [ ] Show to Chvala again
 - [x] Implement pseudocode (JR, 10/12)
 - [x] Are the corner terms for the A matrix correct? (class, 10/13)
 - [x] Is the iteration for k correct? (class, 10/13)
