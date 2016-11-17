@@ -21,7 +21,7 @@ real(real64), allocatable :: b_old(:)
 real(real64) :: k_error, b_error
 real(real64) :: m, m_old                            ! container for all our magnitude functions
 real(real64) :: k_old
-real(real64) :: min_error=0.0001
+real(real64) :: min_error=0.001
 real(real64) :: k=1                                 ! guess initial k
 
 real(real64) :: mag 
@@ -47,12 +47,12 @@ D = 1.0/(3.0*D)              ! Diffusion Coef
 j_tot = 0
 width_j=0
 
-100 dx = w/n                     ! Step Size
+100 dx = w/real(n,real64)                     ! Step Size
 A=0
 b=0
 
 S=nusig
-S(1)=S(1)/2
+S(1)=S(1)/2.0
 !--------------------------Matrix Declaration-----------------------------!
 
    A(1,1) = (0.5*sigma_a)+(D/(dx**2))
@@ -95,12 +95,11 @@ b_error = 1.0
 
 ! while (k_error > min_error OR phi_error > min_error) and i < MAX_ITERATIONS:
 do while ((k_error .gt. min_error) .or. (b_error .gt. min_error)) 
-
-  b=S*b/k
  
   b_old = b      ! don't throw away old b
   k_old = k      ! don't throw away old k
 
+  b=S*b/k
   call DGETRS('N', n, 1, A, n, ipiv, b, n, info)  ! b_prime = A_inverse * b
   if (info /= 0) stop 'Solution of the linear system failed!'
 
@@ -116,12 +115,13 @@ do while ((k_error .gt. min_error) .or. (b_error .gt. min_error))
   k =  m / m_old                  ! k_prime = magnitude(b) / magnitude(b_old)
       
 !  call error(k_old, k, k_error)  ! k_error = error_function(k, k_prime)
-  k_error = (k-k_old)/k
+  k_error = abs(k-k_old)/k
 
 !  call error(b_old, b, b_error)  ! b_error = error_function(b, b_prime)
-b_error = maxval(b - b_old)
+b_error = maxval(abs((b - b_old)/b_old))
 
-  ! b = b / m
+
+   b = b / m
 
   j = j+1        ! i++
 enddo
