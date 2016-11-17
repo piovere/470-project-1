@@ -1,6 +1,8 @@
 # 470-project-1
 
 ## To Do ##
+- [ ] Normalize flux vector in project 2
+- [ ] 
 - [x] Implement pseudocode (JR, 10/12)
 - [x] Are the corner terms for the A matrix correct? (class, 10/13)
 - [x] Is the iteration for k correct? (class, 10/13)
@@ -17,3 +19,24 @@
 - I had to avoid the subrountines because I don't think I pushed them from psudeocode to actual code properly. The issues was pushing vectors vs. variables through the subroutines
 - Only for the slab geometry but I think that would be an easy addition to the code once we have them
 - The solution doesn't stop working for small slab widths
+
+
+# Presentation
+## Introduction
+- Diffusion
+- Problem
+## Diffusion
+- Analytical calculation
+- Numerical
+    - System of equations
+    - Matrix
+    - Alg. err?
+## Results
+- plots
+- tables
+- discussion
+## EC Results
+## Conclusions
+- What we learned in the project
+## Who contributed what
+## Appendices
