@@ -22,7 +22,7 @@ real(real64) :: k_error, b_error
 real(real64) :: m, m_old                            ! container for all our magnitude functions
 real(real64) :: k_old
 real(real64) :: min_error=0.0001
-real(real64) :: k=1                                 ! guess initial k
+real(real64) :: k                                 ! guess initial k
 
 integer      :: you
 real(real64) :: mag
@@ -41,8 +41,8 @@ n=n-1
 allocate (A(n,n),b(n),ipiv(n),b_old(n),S(n))
 
 
-sigma_a = 0.15               ! Sigma absorb
-nusig = 0.157                ! Sigma fission*nu
+sigma_a = 0.1532               ! Sigma absorb
+nusig = 0.1570                ! Sigma fission*nu
 D=3.62E-2                    ! Sigma Transport
 D = 1.0/(3.0*D)              ! Diffusion Coef
 j_tot = 0
@@ -85,10 +85,8 @@ S(1)=S(1)/2.0
 !-------------------------------------------------------------------------!
 ! guess initial b vector
 b = 1.0
+k=1
 
-!do i=1, n
-!    b(i)=b(i)*S(i)
-!enddo
 mag = 0 
 j=0
 
@@ -101,7 +99,10 @@ do while ( ((b_error .gt. min_error) .or. (k_error .gt. min_error)) .and. (j .lt
   b_old = b      ! don't throw away old b
   k_old = k      ! don't throw away old k
 
-  b=S*b/k
+
+
+  b=b*S/k
+
   call DGETRS('N', n, 1, A, n, ipiv, b, n, info)  ! b_prime = A_inverse * b
   if (info /= 0) stop 'Solution of the linear system failed!'
 
@@ -114,8 +115,6 @@ do while ( ((b_error .gt. min_error) .or. (k_error .gt. min_error)) .and. (j .lt
 
 
   k_error = abs((k-k_old)/k)
-
-
 !   b_error = maxval(abs((b - b_old)/b_old)
 
    do i=1 ,n
@@ -123,9 +122,6 @@ do while ( ((b_error .gt. min_error) .or. (k_error .gt. min_error)) .and. (j .lt
    enddo
 
    b_error=(b(you)-b_old(you))/b_old(you)
-
-!   print *,((b_error .gt. min_error)) , (k_error .gt. min_error)
-  
    b = b / m
 
    j = j+1        ! i++
@@ -155,7 +151,9 @@ write(77, "(1e10.4)" )
 print *,'Number of iterations until convergence:  ', j_tot
 if (j .eq. MAX_ITERATIONS) print *,'WHAT HAVE YOU DONE'
 print *, 'Final k value: ', k
-print *,'Critical width:  ', w
+print *,'Critical width:  ', 2.0*w
 
 
+call system('gnuplot -p flux.plt')
+call system('xdg-open FluxEvo.gif')
 end program desperatev2
