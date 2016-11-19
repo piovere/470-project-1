@@ -16,15 +16,16 @@ real(real64)              :: sigma_a, D, dx, w, nusig  !Declared below
 !real(real64), parameter   :: pi=4.0*atan(1.0)
 
 !------------------------Used for Iteration loop--------------------------!
-integer :: j, width_j ,j_tot, MAX_ITERATIONS = 1000                
+integer :: j, j_width ,j_tot, MAX_ITERATIONS = 500                
 real(real64), allocatable :: b_old(:)
 real(real64) :: k_error, b_error
 real(real64) :: m, m_old                            ! container for all our magnitude functions
 real(real64) :: k_old
-real(real64) :: min_error=0.001
+real(real64) :: min_error=0.0001
 real(real64) :: k=1                                 ! guess initial k
 
-real(real64) :: mag 
+integer      :: you
+real(real64) :: mag
 ! External procedures defined in LAPACK
 external DGETRF, DGETRS
 !open( unit = 55, file= "Analytic.dat")
@@ -35,9 +36,9 @@ print *,"Number of nodes? "
 read *,n
 print *,'Width?'
 read *,w
+
 n=n-1
 allocate (A(n,n),b(n),ipiv(n),b_old(n),S(n))
-
 
 
 sigma_a = 0.15               ! Sigma absorb
@@ -45,7 +46,8 @@ nusig = 0.157                ! Sigma fission*nu
 D=3.62E-2                    ! Sigma Transport
 D = 1.0/(3.0*D)              ! Diffusion Coef
 j_tot = 0
-width_j=0
+j_width=0
+you=0
 
 100 dx = w/real(n,real64)                     ! Step Size
 A=0
@@ -82,19 +84,19 @@ S(1)=S(1)/2.0
 !-------------------------Business loop-----------------------------------!
 !-------------------------------------------------------------------------!
 ! guess initial b vector
-b = 10.0
+b = 1.0
 
-do i=1, n
-    b(i)=b(i)*S(i)
-enddo
-
+!do i=1, n
+!    b(i)=b(i)*S(i)
+!enddo
+mag = 0 
 j=0
 
 k_error = 1.0
 b_error = 1.0
 
-! while (k_error > min_error OR phi_error > min_error) and i < MAX_ITERATIONS:
-do while ((k_error .gt. min_error) .or. (b_error .gt. min_error)) 
+
+do while ( ((b_error .gt. min_error) .or. (k_error .gt. min_error)) .and. (j .lt. MAX_ITERATIONS))
  
   b_old = b      ! don't throw away old b
   k_old = k      ! don't throw away old k
@@ -103,58 +105,57 @@ do while ((k_error .gt. min_error) .or. (b_error .gt. min_error))
   call DGETRS('N', n, 1, A, n, ipiv, b, n, info)  ! b_prime = A_inverse * b
   if (info /= 0) stop 'Solution of the linear system failed!'
 
-!  call magnitude(b, n, m)
   m=norm2(b)
-
-! call magnitude(b_old, n, m_old)
   m_old=norm2(b_old)
 
-  !print *,'m: ', m
-  !print *,'m_old: ', m_old
-
-  k =  m / m_old                  ! k_prime = magnitude(b) / magnitude(b_old)
-      
-!  call error(k_old, k, k_error)  ! k_error = error_function(k, k_prime)
-  k_error = abs(k-k_old)/k
-
-!  call error(b_old, b, b_error)  ! b_error = error_function(b, b_prime)
-b_error = maxval(abs((b - b_old)/b_old))
 
 
+  k = k_old* m / m_old                  ! k_prime = magnitude(b) / magnitude(b_old)
+
+
+  k_error = abs((k-k_old)/k)
+
+
+!   b_error = maxval(abs((b - b_old)/b_old)
+
+   do i=1 ,n
+        if ( abs(b(i)-b_old(i)) .gt. mag) you=i
+   enddo
+
+   b_error=(b(you)-b_old(you))/b_old(you)
+
+!   print *,((b_error .gt. min_error)) , (k_error .gt. min_error)
+  
    b = b / m
 
-  j = j+1        ! i++
+   j = j+1        ! i++
+
 enddo
 
 j_tot=j_tot+j
 
-
-!-------------------------width adjustments for k=1-----------------------!
   if(k .lt. 1.0-min_error)then
-     print *,'width: ', w
      w=1.1*w
-    width_j=width_j+1
+    j_width=j_width+1
      goto 100
-  else if(k .gt. 1.0+min_error)then
-     print *,'width: ', w  
+  else if(k .gt. 1.0+min_error)then  
      w=0.9*w
-    width_j=width_j+1
+    j_width=j_width+1
      goto 100
   else
-     print *,'Number of width adjustments:',width_j
+     print *,'Number of width adjustments:',j_width
   endif
 
-  do i=1,n 
-    mag=mag+b(i)
-  enddo
-
-
-!-------------------------VOMIT RESULTS-----------------------------------!
-print *,'Number of iterations until convergence:  ', j_tot
-if (j .eq. MAX_ITERATIONS) print *,'WHAT HAVE YOU DONE'
 write(77, "(1e10.4)" ) b
 write(77, "(1e10.4)" ) 0.0
+write(77, "(1e10.4)" ) 
+
+!-------------------------VOMIT RESULTS-----------------------------------!
+
+print *,'Number of iterations until convergence:  ', j_tot
+if (j .eq. MAX_ITERATIONS) print *,'WHAT HAVE YOU DONE'
 print *, 'Final k value: ', k
 print *,'Critical width:  ', w
-end program desperatev2
 
+
+end program desperatev2
