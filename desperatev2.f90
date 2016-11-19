@@ -154,6 +154,4 @@ print *, 'Final k value: ', k
 print *,'Critical width:  ', 2.0*w
 
 
-call system('gnuplot -p flux.plt')
-call system('xdg-open FluxEvo.gif')
 end program desperatev2
