@@ -5,10 +5,8 @@
 from babyreactor.material import Material
 import numpy as np
 import numpy.linalg as la
+from babyreactor.config import MIN_ERROR, MAX_ITERATIONS
 
-
-MIN_ERROR = 0.001
-MAX_ITERATIONS = 1e7
 
 def eigenflux(material, width, nodes, source, min_error=MIN_ERROR, reflector=None):
     """Calculate flux and k-value for given material
