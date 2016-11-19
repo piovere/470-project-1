@@ -6,6 +6,9 @@ In case you did not receive prompts, or need some sensible defaults
 import numpy as np
 
 
+MIN_ERROR = 0.001
+MAX_ITERATIONS = 1e7
+
 FUEL_NODES = 10
 REFLECTOR_NODES = 10
 ENERGY_GROUPS = 4
