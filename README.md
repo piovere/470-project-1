@@ -21,6 +21,11 @@
 - Only for the slab geometry but I think that would be an easy addition to the code once we have them
 - The solution doesn't stop working for small slab widths
 
+# Useful Links
+- [UT Color Pallette](http://brand.utk.edu/colors/palettes/)
+- [Some FOTRAN lessons](http://www.cs.mtu.edu/~shene/COURSES/cs201/NOTES/fortran.html)
+- [A thread on FORTRAN in multiple files](https://www.physicsforums.com/threads/fortran-77-subroutine-in-separate-file.473952/)
+
 
 # Presentation
 
