@@ -16,7 +16,7 @@
 
  # Note:
 Current Issues with christmas (11/20 Andrew)
--The adjustments for k_old->k is not working (which also prevents criticallty search from executing
+- The adjustments for k_old->k is not working (which also prevents criticallty search from executing
 - Output file is only one(?) of the flux groups (Its all NaN's anyway so maybe this will go away)
 - Still need to put in new matrix and matrix declaration subroutine
 - That tinsle stuff gets everywhere
