@@ -15,11 +15,11 @@
 
 
  # Note:
- I've cleaned up the code that was in the desperate.f90 and put it in desperatev2.f90 (Still trying to think of a better name). Some problems with the code(Andrew, 10/24):
-
-- I had to avoid the subrountines because I don't think I pushed them from psudeocode to actual code properly. The issues was pushing vectors vs. variables through the subroutines
-- Only for the slab geometry but I think that would be an easy addition to the code once we have them
-- The solution doesn't stop working for small slab widths
+Current Issues with christmas (11/20 Andrew)
+-The adjustments for k_old->k is not working (which also prevents criticallty search from executing
+- Output file is only one(?) of the flux groups (Its all NaN's anyway so maybe this will go away)
+- Still need to put in new matrix and matrix declaration subroutine
+- That tinsle stuff gets everywhere
 
 # Useful Links
 - [UT Color Pallette](http://brand.utk.edu/colors/palettes/)
