@@ -14,14 +14,10 @@ Our numerical calculation of the given parameters gave a critical width of 5.14 
     B_g^2 &= B_m^2 \\
     \left( \frac{\pi}{\tilde{a}} \right) &= \frac{\nu \Sigma_f - \Sigma_a}{D} \\
     \tilde{a} &= \pi \sqrt{ \frac{D}{\nu \Sigma_f - \Sigma_a} } \numberthis \label{eq:buckling} \\
-    \tilde{a} &= w + z_0 \\
-    &= w + 0.7104 \lambda_{tr} \\
-    w &= \pi \sqrt{ \frac{D}{\nu \Sigma_f - \Sigma_a} } - 0.7104 \lambda_{tr} \\
-    &= \pi \sqrt{ \frac{D}{\nu \Sigma_f - \Sigma_a} } -  0.2368 D \\
-    &= 94.3
+    \tilde{a} &= \SI{154.65}{\centi\meter}
 \end{align*}
 
-Substituting the values used to perform our numerical calculations, we arrive at a width of $w = $
+Substituting the values used to perform our numerical calculations, we arrive at a width of $w = \SI{154.65}{\centi\meter}$
 
 As with the previous project, it was worth noting how the values converged as the number of nodes was increased. As such, the program was run with different parameters to determine the convergence. The results of this can be seen in figure \ref{fig:flux_vs_nodes}. From this, it is clear that this method converges by or before $N=500$ nodes, since this is apparently identical to $N=10^3$ nodes.
 
