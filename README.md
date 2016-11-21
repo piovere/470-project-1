@@ -1,9 +1,12 @@
 # 470-project-1
 
 ## To Do ##
-- [ ] Normalize flux vector in project 2
-- [ ] Node-by-node checking of flux convergence
-- [ ] Show to Chvala again
+- [ ] Implement real math version of eigenvalue/eigenvector convergence
+- [ ] Correct math in Project 2 report to look for $\tilde{a}$ not w
+- [ ] Update graphs to show new critical width (~154cm)
+- [x] Normalize flux vector in project 2
+- [x] Node-by-node checking of flux convergence
+- [x] Show to Chvala again
 - [x] Implement pseudocode (JR, 10/12)
 - [x] Are the corner terms for the A matrix correct? (class, 10/13)
 - [x] Is the iteration for k correct? (class, 10/13)
