@@ -1,9 +1,9 @@
 # 470-project-1
 
 ## To Do ##
-- [ ] Implement real math version of eigenvalue/eigenvector convergence
-- [ ] Correct math in Project 2 report to look for $\tilde{a}$ not w
-- [ ] Update graphs to show new critical width (~154cm)
+- [x] Implement real math version of eigenvalue/eigenvector convergence
+- [x] Correct math in Project 2 report to look for $\tilde{a}$ not w
+- [x] Update graphs to show new critical width (~154cm)
 - [x] Normalize flux vector in project 2
 - [x] Node-by-node checking of flux convergence
 - [x] Show to Chvala again
