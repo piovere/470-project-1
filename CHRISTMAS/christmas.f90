@@ -15,9 +15,9 @@ real(real64), allocatable :: ipiv(:)                ! pivoting array for LAPACK
 real(real64), allocatable :: chi(:)                 ! fission population birthrate (only fast)
 integer                   :: n, g                   ! n=number of spatial nodes, g=energy groups
 integer                   :: info            
-real(real64), allocatable :: sigma_a(:), sigma_s(:,:), sigma_tr(:),sigma_fnu(:)      
+real(real64), allocatable :: sigma_a(:,:), sigma_s(:,:), sigma_tr(:,:),sigma_fnu(:), sigma_r(:,:)      
 real(real64)              :: D, dx, w   
-real(real64), allocatable :: b_old(:,:)
+real(real64), allocatable :: b_old(:,:), S(:)
 !------------------------Used for Iteration loop--------------------------!
 integer                   :: j, j_width ,j_tot, i, h , y ,p ,x               
 real(real64)              :: k_error, b_error
@@ -36,34 +36,124 @@ read *,n
 print *,'Number of Energy groups?'
 read *,g
 n=n-1
-allocate (A(n,n,g),b(n,g),ipiv(n),b_old(n,g))   ! Used in diff eqs
+allocate (A(n,n,g),b(n,g),ipiv(n),b_old(n,g),S(n))   ! Used in diff eqs
 w=10
 !---------------------Matrix Constants Declaration------------------------!
 
-allocate (sigma_a(g), sigma_s(g,g), sigma_tr(g),chi(g),sigma_fnu(g))
-sigma_a = 0.1532               
-sigma_fnu = 0.157                
-sigma_tr=3.62E-2                           ! Sigma Transport
-D = 1.0/(3.0*sigma_tr(1))                     ! Diffusion Coef
+allocate (sigma_a(g,2), sigma_s(g,g), sigma_tr(g,2),chi(g),sigma_fnu(g),sigma_r(g,2))
+
 j_tot = 0
 j_width=0
 
-chi=0.0
-chi(1)=1.0
+D=9.1
+chi=1_real64   
+chi(1)=0.5_real64   
+
+sigma_s=0.0
+
+!------------------------G=4 declarations---------------------------------!
+if(g .eq. 4)then
+    sigma_s(1,1)=0.37045
+    sigma_s(1,2)=0.04152
+    sigma_s(1,3)=0.00001
+
+    sigma_s(2,2)=0.98285
+    sigma_s(2,3)=0.07459                !scattering cross sections(From, to)
+    sigma_s(2,4)=0.01371
+
+    sigma_s(3,3)=0.76110
+    sigma_s(3,4)=0.31856
+
+    sigma_s(4,3)=0.00085
+    sigma_s(4,4)=1.96607
+
+    sigma_a(1,2)=0.00051
+    sigma_a(2,2)=0.00354
+    sigma_a(3,2)=0.01581
+    sigma_a(4,2)=0.04637
+
+                    ! D already
+    sigma_tr(1,2)=1/(3.0*0.20608)
+    sigma_tr(2,2)=1/(3.0*0.60215)
+    sigma_tr(3,2)=1/(3.0*0.56830)
+    sigma_tr(4,2)=1/(3.0*1.21110)
+
+
+             !------------ Core is below-------------!              
+    sigma_fnu(1)=0.009572 
+    sigma_fnu(2)=0.001193
+    sigma_fnu(3)=0.01768
+    sigma_fnu(4)=0.18514
+
+    sigma_a(1,1)=0.004946
+    sigma_a(2,1)=0.002840
+    sigma_a(3,1)=0.03053
+    sigma_a(4,1)=0.1210
+
+                    ! D already
+    sigma_tr(1,1)=2.1623
+    sigma_tr(2,1)=1.0867
+    sigma_tr(3,1)=0.6318
+    sigma_tr(4,1)=0.3543
+
+    sigma_r(1,1)=0.08795
+    sigma_r(2,1)=0.06124
+    sigma_r(3,1)=0.09506
+    sigma_r(4,1)=0.1210
+!------------------------G=2 declarations---------------------------------!
+elseif(g .eq. 2)then
+    sigma_s(1,2)=0.0494
+
+    sigma_a(1,2)=0.0004
+    sigma_a(2,2)=0.0197
+
+    sigma_tr(1,2)=1.13
+    sigma_tr(2,2)=0.16
+
+
+    sigma_r(1,2)=0.0494
+    sigma_r(2,2)=0.0197
+
+
+             !------------ Core is below-------------!              
+    sigma_fnu(1)=0.008476 
+    sigma_fnu(2)=0.18514
+
+
+    sigma_a(1,1)=0.01207
+    sigma_a(2,1)=0.121
+
+
+                    ! D already
+    sigma_tr(1,1)=1.2627
+    sigma_tr(2,1)=0.3543
+
+
+    sigma_r(1,1)=0.02619
+    sigma_r(2,1)=0.121
+
+else
+    print *,'I cant do that John'
+    goto 12
+endif
+
+
+!--------------------------Matrix Declaration-----------------------------!
+
 
 100 dx = w/n                               ! Step Size
 A=0
 
-!--------------------------Matrix Declaration-----------------------------!
+
 do p=1,g
-   A(1,1,p) = (0.5*sigma_a(1))+(D/(dx**2))
+   A(1,1,p) = (0.5_real64   *sigma_a(1,1))+(D/(dx**2))
    A(1,2,p) = -D/(dx**2.0)
-   A(n,n,p) = sigma_a(1)+2.0*D/(dx**2)
+   A(n,n,p) = sigma_a(1,1)+2.0_real64   *D/(dx**2)
    A(n,n-1,p) = -D/(dx**2)
 
    do i=2 , n-1
 
-      A(i,i,p) = sigma_a(1)+2.0*D/(dx**2)
+      A(i,i,p) = sigma_a(1,1)+2.0_real64   *D/(dx**2)
       A(i,i+1,p) = -D/(dx**2)
       A(i,i-1,p) = -D/(dx**2)
 
@@ -86,6 +176,11 @@ enddo
 !guess initial
 b = 1.0
 k=1.0
+S=0
+do i=1,g
+    S(:)= S(:)+sigma_fnu(i)*b(:,i)
+enddo
+S(1)=S(1)/2.0
 mag = 0 
 j=0
 
@@ -97,14 +192,16 @@ do while ( ((b_error .gt. min_error) .or. (k_error .gt. min_error)) .and. (j .lt
 
     b_old = b     
     k_old = k     
-    m_old=0
+
 
 !------------------Eigenvalue Search--------------------------------------!
     do p=1,g
-        do h=1,g
-            b(:,p) = (chi(h)*sigma_fnu(h) *b(:,h) + b(:,p) ) /k
-        enddo
-
+        if(p .gt. 1)then
+            do i=p, g
+                b(:,p)= b(:,p) + sigma_s(i,p)*b(:,i)
+            enddo
+        endif
+        if(p .eq. 1) b(:,1)=S*b(:,1)/k
         call DGETRS('N', n, 1, A(:,:,p), n, ipiv, b(:,p), n, info) 
         if (info /= 0) stop 'Solution of the linear system failed!'
 
@@ -112,13 +209,15 @@ do while ( ((b_error .gt. min_error) .or. (k_error .gt. min_error)) .and. (j .lt
     j = j+1        
 !-------------------------------------------------------------------------!
 !----------------------Error tests----------------------------------------!
+    m_old=norm2(S)
 
-    
-    do p=1,g
-        m=norm2(b(:,p))/norm2(b_old(:,p))
-        m_old = m+m_old                             !add individual flux increase?
+    S=0
+    do i=1,g
+        S(:)= S(:)+sigma_fnu(i)*b(:,i)
     enddo
-    
+    S(1)=S(1)/2.0
+
+    k = k_old *norm2(S)/ m_old                 
 
     do i=1 ,n
         do p=1,g
@@ -131,17 +230,44 @@ do while ( ((b_error .gt. min_error) .or. (k_error .gt. min_error)) .and. (j .lt
     enddo
 
     b_error=(b(x,y)-b_old(x,y))/b_old(x,y)
-    b = b / norm2(b)
-
-    print *,'M_OLD=',m_old
-    print *,'k=     ', k
-    k = k_old * m_old                 
     k_error = abs((k-k_old)/k)
+
+    do i=1,g
+    b(:,i)  = b(:,i) / norm2(b(:,i) )
+    enddo
+
 
 enddo
 
 j_tot=j_tot+j
+    !if(j_width .eq. 10) goto 12
 
+!-------------------------width adjustments for k=1-----------------------!
+
+  if(k .lt. 1.0-min_error)then
+     w=1.1*w
+    j_width=j_width+1
+     goto 100
+  else if(k .gt. 1.0+min_error)then  
+     w=0.9*w
+    j_width=j_width+1
+     goto 100
+  else
+     print *,'Number of width adjustments:',j_width
+  endif
+
+12 continue
+!-------------------------VOMIT RESULTS-----------------------------------!
+print *,'Number of iterations until convergence:  ', j_tot
+print *,'Critical width:  ', 2.0*w
+
+write(77, "(1e10.4)" ) b
+write(77, "(1e10.4)" ) 0.0
+call system('gnuplot -p flux.plt')
+call system('xdg-open Fluxdis.png')
+ close(77)
+
+end program christmas
 
 !-------------------------width adjustments for k=1-----------------------!
 

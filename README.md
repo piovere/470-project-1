@@ -18,10 +18,10 @@
 
 
  # Note:
-Current Issues with christmas (11/20 Andrew)
-- The adjustments for k_old->k is not working (which also prevents criticallty search from executing
-- Output file is only one(?) of the flux groups (Its all NaN's anyway so maybe this will go away)
+Current Issues with christmas (11/22 Andrew)
 - Still need to put in new matrix and matrix declaration subroutine
+- I think the normalization is goofing up (all groups are same flux numbers) could also be issue with generation terms (Scattering and fission)
+- Hopefully fix up the flux output
 - That tinsle stuff gets everywhere
 
 # Useful Links
