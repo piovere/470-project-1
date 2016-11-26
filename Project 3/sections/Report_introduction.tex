@@ -5,22 +5,28 @@
 Proving the capabilities and safety of a reactor design requires effective modeling of the neutron flux in the core (expressed in equation \ref{eqn:transport}). For real cores, however, this is impossible, and must be first simplified, then discretized to provide the solution for a representative mesh. Certain simplifications can be applied to help make the problem easier to solve, since it allows the time dependent terms to be removed.
 
 1) Isotropic assumption: ignoring the direction of the incoming neutron. This effectively drops all terms involving Ωˆ
-2) Monoenergetic assumption: ignoring the energy variance of the neutrons. This means that a single set of cross sections
-can be used and allows us to ignore neutrons scattering into and out of the domain of interest
-3) Homogeneity assumption: assuming that all core materials are evenly mixed throughout the volume of interest. This
-allows us to ignore discrete boundaries between materials
+2) Discretized energies:  Neutrons ar placed into energy bins
+3) Interface between the moderator and reflector material.
 4) Steady-state assumption: assuming that the system has been in this state for a long period and that no transients occur.
 
 
 
-	For this project we have analyzed a simplified, monoenergetic, source through a homogeneous multiplying medium in one dimension. These assumptions simplify the transport equation to that presented in equation \ref{eqn:simplified_diffusion}.
+	For this project we have analyzed a cylindrical fuel pin surrounded by a cylindrical reflector.  The previous assumptions simplify the transport equation to that presented in equation \ref{eqn:multi_group}.
 
-	In the following sections, we will first describe the terms in equation \ref{eqn:simplified_diffusion}, then provide an analytical solution. We will also provide an analysis of the accuracy of the analysis as a function of the number of nodes. Finally, we will analzye the solution for different coordinate systems to equation \ref{eqn:simplified_diffusion}.  Cartesian , cylindrical and spherical are the systems of interest.
+	In the following sections, we will first describe the terms in equation \ref{eqn:multi_group}, then provide an analytical solution. The flux will also be analyzed in the cylindrical system using a programmed coded with a chosen number of nodes and groups. We will also provide an analysis of the accuracy of the analysis as a function of the number of nodes and number of groups. 
 
+	
 	%\begin{strip}
 	\begin{equation}
 		\pdv{n}{t} + v \hat{\Omega} \cdot \nabla n + v \Sigma_t n \left( \mathbf{r}, E^\prime, \hat{\Omega}, t \right) = \\ \int_{4\pi} d \hat{\Omega} ^\prime \int_0^{\infty} dE ^\prime v^\prime \Sigma_s\left( E ^\prime \rightarrow E, \hat{\Omega} ^\prime \rightarrow \hat{\Omega} \right) n\left( \mathbf{r}, E ^\prime, \hat{\Omega} ^\prime, t \right) + s\left( \mathbf{r}, E, \hat{\Omega}, t \right)
 		\label{eqn:transport}
+	\end{equation}
+	%\end{strip}
+	
+	%\begin{strip}
+	\begin{equation}
+		- \nabla \cdot D_{g} \nabla \phi_{g}+ v \Sigma_{Rg} \phi_g = \sum_{g^'=1}^{g-1} = \Sigma_{sg^'g} \phi_{g^'} + \frac{1}{k} \chi_g \sum_{g^'=1}^{G} \nu_{g^'} \Sigma_{tg^'} \phi_{g^'} 
+		\label{eqn:multi_group}
 	\end{equation}
 	%\end{strip}
   
