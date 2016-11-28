@@ -20,7 +20,7 @@
  # Note:
 Current Issues with christmas (11/22 Andrew)
 - Still need to put in new matrix and matrix declaration subroutine
-- I think the normalization is goofing up (all groups are same flux numbers) could also be issue with generation terms (Scattering and fission)
+- I think if the matrix is put in properly then things will work out
 - Hopefully fix up the flux output
 - That tinsle stuff gets everywhere
 
