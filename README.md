@@ -18,7 +18,7 @@
 
 
  # Note:
-Current Issues with christmas (11/22 Andrew)
+Current Issues with christmas (11/28 Andrew)
 - Still need to put in new matrix and matrix declaration subroutine
 - I think if the matrix is put in properly then things will work out
 - Hopefully fix up the flux output
