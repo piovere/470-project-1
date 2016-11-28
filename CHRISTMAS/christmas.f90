@@ -13,30 +13,37 @@ real(real64), allocatable :: A(:,:,:)               ! matrix to LU decompose
 real(real64), allocatable :: b(:,:)                 ! b vector (flux array)
 real(real64), allocatable :: ipiv(:)                ! pivoting array for LAPACK
 real(real64), allocatable :: chi(:)                 ! fission population birthrate (only fast)
-integer                   :: n, g                   ! n=number of spatial nodes, g=energy groups
+integer                   :: n, g,n_flector, n_tot         ! n=number of spatial nodes, g=energy groups
 integer                   :: info            
 real(real64), allocatable :: sigma_a(:,:), sigma_s(:,:), sigma_tr(:,:),sigma_fnu(:), sigma_r(:,:)      
-real(real64)              :: D, dx, w   
+real(real64)              :: w, ratio, dr1, dr2   
 real(real64), allocatable :: b_old(:,:), S(:)
 !------------------------Used for Iteration loop--------------------------!
-integer                   :: j, j_width ,j_tot, i, h , y ,p ,x               
+integer                   :: j, j_width ,j_tot, i,p                
 real(real64)              :: k_error, b_error
-real(real64)              :: m, m_old                            
+real(real64)              :: m_old                           
 real(real64)              :: k , k_old    
 real(real64)              :: min_error=0.0001
 integer                   :: MAX_ITERATIONS = 1000 
-real(real64)              :: mag
+
 ! External procedures defined in LAPACK
 external DGETRF, DGETRS
 open( unit = 77, file= "Flux.dat")
 !-------------------------------------------------------------------------!
 
-print *,"Number of nodes? "
+print *,"Number of core nodes? "
 read *,n
+
+print *,'Number of reflector nodes?'
+read *,n_flector
+
+print *,'What is the desired ratio between core and reflector width?( dw/W) real number please'
+read *, ratio
 print *,'Number of Energy groups?'
 read *,g
 n=n-1
-allocate (A(n,n,g),b(n,g),ipiv(n),b_old(n,g),S(n))   ! Used in diff eqs
+n_tot=(n+n_flector)
+allocate (A(n_tot,n_tot,g),b(n_tot,g),ipiv(n_tot),b_old(n_tot,g),S(n_tot))   ! Used in diff eqs
 w=10
 !---------------------Matrix Constants Declaration------------------------!
 
@@ -45,7 +52,7 @@ allocate (sigma_a(g,2), sigma_s(g,g), sigma_tr(g,2),chi(g),sigma_fnu(g),sigma_r(
 j_tot = 0
 j_width=0
 
-D=9.1
+
 chi=1_real64   
 chi(1)=0.5_real64   
 
@@ -141,39 +148,49 @@ endif
 !--------------------------Matrix Declaration-----------------------------!
 
 
-100 dx = w/n                               ! Step Size
+100 dr1 = w/n                               ! Step Size
+dr2 = w*ratio/n_flector
 A=0
-
+print *,sigma_tr(1,2)
 
 do p=1,g
-   A(1,1,p) = (0.5_real64   *sigma_a(1,1))+(D/(dx**2))
-   A(1,2,p) = -D/(dx**2.0)
-   A(n,n,p) = sigma_a(1,1)+2.0_real64   *D/(dx**2)
-   A(n,n-1,p) = -D/(dx**2)
+   A(1,1,p) = (0.5_real64   *sigma_a(1,1))+(sigma_tr(p,1)/(dr1**2))
+   A(1,2,p) = -sigma_tr(p,1)/(dr1**2.0)
+   A(n_tot,n_tot,p) = sigma_a(1,1)+2.0_real64   *sigma_tr(p,1)/(dr1**2)
+   A(n_tot,n_tot-1,p) = -sigma_tr(p,1)/(dr1**2)
 
    do i=2 , n-1
 
-      A(i,i,p) = sigma_a(1,1)+2.0_real64   *D/(dx**2)
-      A(i,i+1,p) = -D/(dx**2)
-      A(i,i-1,p) = -D/(dx**2)
+      A(i,i,p) = sigma_r(p,1)+2.0_real64   *sigma_tr(p,1)/(dr1**2)
+      A(i,i+1,p) = -sigma_tr(p,1)/(dr1**2)
+      A(i,i-1,p) = -sigma_tr(p,1)/(dr1**2)
+
+   enddo
+   do i=n , n_flector-1
+
+      A(i,i,p) = sigma_r(p,2)+2.0_real64   *sigma_tr(p,2)/(dr2**2)
+      A(i,i+1,p) = -sigma_tr(p,2)/(dr2**2)
+      A(i,i-1,p) = -sigma_tr(p,2)/(dr2**2)
 
    enddo
 enddo
 ! Pretty matrix printing
 ! From http://jblevins.org/log/array-write
-! do i=1,n
-!     write(*,"(100g15.5)") ( A(i,j), j=1,n )
-! enddo
+ do i=1,n_tot
+     write(*,"(10g15.5)") ( A(i,j,1), j=1,n_tot )
+ enddo
 
     !LU factorization of a general M-by-N matrix A
     ! See: http://www.netlib.org/lapack/explore-html/d3/d6a/dgetrf_8f.html
     do p=1,g    
-        call DGETRF(n, n, A(:,:,p), n, ipiv, info)
+        call DGETRF(n_tot, n_tot, A(:,:,p), n_tot, ipiv, info)
         if (info /= 0) stop 'Matrix is numerically singular!'
+        print *,'HELP ME'
     enddo
 !-------------------------Business loop-----------------------------------!
 !-------------------------------------------------------------------------!
 !guess initial
+
 b = 1.0
 k=1.0
 S=0
@@ -181,7 +198,6 @@ do i=1,g
     S(:)= S(:)+sigma_fnu(i)*b(:,i)
 enddo
 S(1)=S(1)/2.0
-mag = 0 
 j=0
 
 k_error = 1.0
@@ -202,7 +218,7 @@ do while ( ((b_error .gt. min_error) .or. (k_error .gt. min_error)) .and. (j .lt
             enddo
         endif
         if(p .eq. 1) b(:,1)=S*b(:,1)/k
-        call DGETRS('N', n, 1, A(:,:,p), n, ipiv, b(:,p), n, info) 
+        call DGETRS('N', n_tot, 1, A(:,:,p), n_tot, ipiv, b(:,p), n_tot, info) 
         if (info /= 0) stop 'Solution of the linear system failed!'
 
     enddo
@@ -211,6 +227,8 @@ do while ( ((b_error .gt. min_error) .or. (k_error .gt. min_error)) .and. (j .lt
 !----------------------Error tests----------------------------------------!
     m_old=norm2(S)
 
+ 
+
     S=0
     do i=1,g
         S(:)= S(:)+sigma_fnu(i)*b(:,i)
@@ -218,32 +236,25 @@ do while ( ((b_error .gt. min_error) .or. (k_error .gt. min_error)) .and. (j .lt
     S(1)=S(1)/2.0
 
     k = k_old *norm2(S)/ m_old                 
-
-    do i=1 ,n
-        do p=1,g
-            if ( abs(b(i,p)-b_old(i,p)) .gt. mag)then
-            mag= abs(b(i,p)-b_old(i,p))
-            x=i
-            y=p
-            endif
-        enddo
-    enddo
-
-    b_error=(b(x,y)-b_old(x,y))/b_old(x,y)
     k_error = abs((k-k_old)/k)
-
-    do i=1,g
-    b(:,i)  = b(:,i) / norm2(b(:,i) )
+    
+    do p=1,g
+        chi(p)=maxval(abs(b(:,p) - b_old(:,p)))/maxval(b_old(:,p))
     enddo
+    b_error=maxval(chi)
 
-
+   do i=1,g
+        b(:,i)  = b(:,i) / norm2(b(:,i) )
+    enddo
 enddo
-
+!print *, (b_error .gt. min_error)  
+!print *, (k_error .gt. min_error)
+!print *, (j .lt. MAX_ITERATIONS)
 j_tot=j_tot+j
-    !if(j_width .eq. 10) goto 12
+
 
 !-------------------------width adjustments for k=1-----------------------!
-
+print *,''
   if(k .lt. 1.0-min_error)then
      w=1.1*w
     j_width=j_width+1
@@ -261,34 +272,8 @@ j_tot=j_tot+j
 print *,'Number of iterations until convergence:  ', j_tot
 print *,'Critical width:  ', 2.0*w
 
-write(77, "(1e10.4)" ) b
-write(77, "(1e10.4)" ) 0.0
-call system('gnuplot -p flux.plt')
-call system('xdg-open Fluxdis.png')
- close(77)
+    write(77, "(1e10.4)" ) b
 
-end program christmas
-
-!-------------------------width adjustments for k=1-----------------------!
-
-  if(k .lt. 1.0-min_error)then
-     w=1.1*w
-    j_width=j_width+1
-     goto 100
-  else if(k .gt. 1.0+min_error)then  
-     w=0.9*w
-    j_width=j_width+1
-     goto 100
-  else
-     print *,'Number of width adjustments:',j_width
-  endif
-
-
-!-------------------------VOMIT RESULTS-----------------------------------!
-print *,'Number of iterations until convergence:  ', j_tot
-print *,'Critical width:  ', 2.0*w
-
-write(77, "(1e10.4)" ) b
 write(77, "(1e10.4)" ) 0.0
 call system('gnuplot -p flux.plt')
 call system('xdg-open Fluxdis.png')
