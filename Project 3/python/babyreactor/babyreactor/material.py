@@ -11,11 +11,11 @@ class Material(object):
     """
 
     def __init__(self):
-        self._scattering = 0
-        self._absorption = 0
-        self._fission = 0
-        self._width = 0
-        self._transport = 0
+        self._scattering = np.array([0])
+        self._absorption = np.array([0])
+        self._fission = np.array([0])
+        self._width = np.array([0])
+        self._transport = np.array([0])
 
     @property
     def scattering(self):
@@ -68,6 +68,8 @@ class Material(object):
 
     @transport.setter
     def transport(self, transport):
+        if type(transport) is not type(np.array([0])):
+            raise ValueError("cross sections should be numpy arrays")
         self._transport = transport
 
     @property
@@ -82,11 +84,18 @@ class Material(object):
     def width(self, width):
         self._width = width
 
-    def matrix(self, nodes=None, width=None):
+    def matrix(self, energy_group, nodes=None, width=None):
         """The matrix that operates on the flux in the material
 
         Will be of size (n * n) where n = nodes - 1
         """
+        try:
+            assert self._scattering.shape[0] ==\
+                    self._absorption.shape[0] ==\
+                    self._transport.shape[0] ==\
+                    self._fission.shape[0]
+        except AssertionError:
+            raise ValueError("There is a disagreement between the number of energy groups")
         if nodes is None:
             nodes = 5
         if width is None:
