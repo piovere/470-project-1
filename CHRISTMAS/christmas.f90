@@ -28,7 +28,7 @@ integer                   :: MAX_ITERATIONS = 1000
 
 ! External procedures defined in LAPACK
 external DGETRF, DGETRS
-open( unit = 77, file= "Flux.dat")
+
 !-------------------------------------------------------------------------!
 
 print *,"Number of core nodes? "
@@ -151,41 +151,46 @@ endif
 100 dr1 = w/n                               ! Step Size
 dr2 = w*ratio/n_flector
 A=0
-print *,sigma_tr(1,2)
+!print *,sigma_tr(1,2)
 
 do p=1,g
-   A(1,1,p) = (0.5_real64   *sigma_a(1,1))+(sigma_tr(p,1)/(dr1**2))
+   A(1,1,p) = (0.5_real64   *sigma_r(p,1))+(2.0*sigma_tr(p,1)/(dr1**2))
    A(1,2,p) = -sigma_tr(p,1)/(dr1**2.0)
-   A(n_tot,n_tot,p) = sigma_a(1,1)+2.0_real64   *sigma_tr(p,1)/(dr1**2)
-   A(n_tot,n_tot-1,p) = -sigma_tr(p,1)/(dr1**2)
+
+   A(n_tot,n_tot,p) = sigma_r(1,2)+2.0_real64   *sigma_tr(p,2)/(dr2**2)
+   A(n_tot,n_tot-1,p) = -sigma_tr(p,2)/(dr2**2)*(1-1/(2*n_tot-1))
+
+   A(n,n-1,p) = -sigma_tr(p,1)/(dr1)  -sigma_tr(p,1)/(2.0*w)
+   A(n,n+1,p) =  -sigma_tr(p,2)/(dr1)  -sigma_tr(p,2)/(2.0*w)
+   A(n,n,p)=(-sigma_tr(p,2)/(dr2)+sigma_tr(p,2)/(2.0*w))+(-A(n,n-1,p))+(sigma_r(p,2)*dr2+sigma_r(p,1)*dr1)/2.0
 
    do i=2 , n-1
-
-      A(i,i,p) = sigma_r(p,1)+2.0_real64   *sigma_tr(p,1)/(dr1**2)
-      A(i,i+1,p) = -sigma_tr(p,1)/(dr1**2)
-      A(i,i-1,p) = -sigma_tr(p,1)/(dr1**2)
+ 
+      A(i,i,p) = sigma_r(p,1) + 2.0_real64   *sigma_tr(p,1)/(dr1**2)
+      A(i,i+1,p) = -(1+1/(2.0*i-1))*sigma_tr(p,1)/(dr1**2)
+      A(i,i-1,p) = -(1-1/(2.0*i-1))*sigma_tr(p,1)/(dr1**2)
 
    enddo
-   do i=n , n_flector-1
+   do i=n+1 , n_tot
 
       A(i,i,p) = sigma_r(p,2)+2.0_real64   *sigma_tr(p,2)/(dr2**2)
-      A(i,i+1,p) = -sigma_tr(p,2)/(dr2**2)
-      A(i,i-1,p) = -sigma_tr(p,2)/(dr2**2)
+      A(i,i+1,p) = -sigma_tr(p,2)/(dr2**2)*(1+1/(2.0*i-1))
+      A(i,i-1,p) = -sigma_tr(p,2)/(dr2**2)*(1-1/(2.0*i-1))
 
    enddo
 enddo
 ! Pretty matrix printing
 ! From http://jblevins.org/log/array-write
- do i=1,n_tot
-     write(*,"(10g15.5)") ( A(i,j,1), j=1,n_tot )
- enddo
+! do i=1,n_tot
+!     write(*,"(10g15.5)") ( A(i,j,1), j=1,n_tot )
+! enddo
 
     !LU factorization of a general M-by-N matrix A
     ! See: http://www.netlib.org/lapack/explore-html/d3/d6a/dgetrf_8f.html
     do p=1,g    
         call DGETRF(n_tot, n_tot, A(:,:,p), n_tot, ipiv, info)
-        if (info /= 0) stop 'Matrix is numerically singular!'
-        print *,'HELP ME'
+!        if (info /= 0) stop 'Matrix is numerically singular!'
+!        print *,'HELP ME'
     enddo
 !-------------------------Business loop-----------------------------------!
 !-------------------------------------------------------------------------!
@@ -194,9 +199,15 @@ enddo
 b = 1.0
 k=1.0
 S=0
-do i=1,g
-    S(:)= S(:)+sigma_fnu(i)*b(:,i)
-enddo
+    do p=1,g
+        do i=1,n_tot
+        if(i .lt. n)then
+            S(i)= S(i)+sigma_fnu(p)*b(i,p)
+        else
+            S(i)=0.0   
+        endif
+        enddo
+    enddo
 S(1)=S(1)/2.0
 j=0
 
@@ -217,7 +228,7 @@ do while ( ((b_error .gt. min_error) .or. (k_error .gt. min_error)) .and. (j .lt
                 b(:,p)= b(:,p) + sigma_s(i,p)*b(:,i)
             enddo
         endif
-        if(p .eq. 1) b(:,1)=S*b(:,1)/k
+        if(p .eq. 1) b(:,p)=b(:,p)+S*b(:,p)/k
         call DGETRS('N', n_tot, 1, A(:,:,p), n_tot, ipiv, b(:,p), n_tot, info) 
         if (info /= 0) stop 'Solution of the linear system failed!'
 
@@ -230,8 +241,15 @@ do while ( ((b_error .gt. min_error) .or. (k_error .gt. min_error)) .and. (j .lt
  
 
     S=0
-    do i=1,g
-        S(:)= S(:)+sigma_fnu(i)*b(:,i)
+    do p=1,g
+        do i=1,n_tot
+        if(i .lt. n+1)then
+            S(i)= S(i)+sigma_fnu(p)*b(i,p)
+
+        else
+            S(i)=0.0   
+        endif
+        enddo
     enddo
     S(1)=S(1)/2.0
 
@@ -251,8 +269,8 @@ enddo
 !print *, (k_error .gt. min_error)
 !print *, (j .lt. MAX_ITERATIONS)
 j_tot=j_tot+j
-
-
+if(j_width .eq. 500)goto 12
+print *,j_width
 !-------------------------width adjustments for k=1-----------------------!
 print *,''
   if(k .lt. 1.0-min_error)then
@@ -272,11 +290,32 @@ print *,''
 print *,'Number of iterations until convergence:  ', j_tot
 print *,'Critical width:  ', 2.0*w
 
-    write(77, "(1e10.4)" ) b
+open( unit = 77, file= "Flux1Group.dat")
+open( unit = 66, file= "Flux2Group.dat")
 
+write(77, "(1e10.4)" ) b(:,1)
 write(77, "(1e10.4)" ) 0.0
-call system('gnuplot -p flux.plt')
-call system('xdg-open Fluxdis.png')
- close(77)
+write(66, "(1e10.4)" ) b(:,2)
+write(66, "(1e10.4)" ) 0.0
 
+
+if(g .eq. 2)goto 14
+
+!call system('xdg-open Fluxdis.png')
+open( unit = 55, file= "Flux3Group.dat")
+open( unit = 44, file= "Flux4Group.dat")
+
+write(55, "(1e10.4)" ) b(:,3)
+write(55, "(1e10.4)" ) 0.0
+write(44, "(1e10.4)" ) b(:,4)
+write(44, "(1e10.4)" ) 0.0
+ close(55)
+ close(44)
+14 continue 
+ close(77)
+ close(66)
+
+call system('gnuplot -p flux.plt')
 end program christmas
+
+
