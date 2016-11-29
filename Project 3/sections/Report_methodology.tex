@@ -77,7 +77,7 @@ The finite-difference equation for the reflector is solved with the same method,
 	
 Ther terms from this equation is implented in the matrix in the row between the core and reflector contributions.
 
-Now let's take a look at the source terms.  For the fast group, the source term  is the fission term.  This gives a final matrix $\opmat{F}$ (for N nodes):
+Now let's take a look at the source terms.  All source terms are pushed to zero at the last node, since there is not flux outside of the reflector.  For the fast group, the source term  is the fission term.  This gives a final matrix $\opmat{F}$ (for N nodes):
 	\[
 	\begin{bmatrix}[1.5]
 		\frac{1}{2k} \nu \Sigma^m_f  & 0 & 0 & 0 & \dots\\
