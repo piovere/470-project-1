@@ -23,10 +23,10 @@
 
 Only the first group has a fission source, while other groups gain neutrons from the downscatter of faster groups.
 
-The internal nodes of both the reactor core and reflector can be derived with the same process as Project 2 for cylindrical coordinates.  The following equation was used to derive  
+The internal nodes of both the reactor core and reflector can be derived with the same process as Project 2 for cylindrical coordinates.  The following general equation was used to derive the internal nodes of the reflector and moderator  and initial boundary of moderator for the first group:
 
 \begin{equation*}
-		-D_m \frac{d^2 \phi}{d r^2} + \frac{1}{r} \frac{d \phi}{dx} + \Sigma_a \phi =   \frac{1}{k} \nu \Sigma^m_f \phi
+		-D_m \frac{d^2 \phi}{d r^2} + \frac{1}{r} \frac{d \phi}{dx} + \Sigma_a \phi =   \frac{1}{k} \nu \Sigma^_mf_1 \phi
 	\end{equation*}
 
 The resulting core contribution to matrix $\opmat{A}$ (for N nodes) is:
@@ -40,6 +40,9 @@ The resulting core contribution to matrix $\opmat{A}$ (for N nodes) is:
 		0 & 0 & 0 & -\frac{-D_m}{\Delta r^2} \left( 1 - \frac{1}{2i-1} \right) & \frac{2D_m}{\Delta r^2} + \Sigma_a
 	\end{bmatrix}
 	\]
+	
+The interface node is where the reactor core and reflector meet.  This means contributions from both materials must be accounted for.  The following finite-difference equation is derived for this special case:
+
 
 	
 	For non-edge nodes and the far right node, the derivation can be performed as follows:
