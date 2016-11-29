@@ -2,21 +2,55 @@
 
 \begin{document}
 
-	Equation \ref{eqn:simplified_diffusion} is a simplified description of neutron diffusion through a finite medium, similar to a point source travelling through a shielding material to a detector. The flux, therefore, depends on the transport cross section. This is accounted for in the term $D_m$, which is related to the transport coefficient by $D_m = 3 \Sigma_{tr}^{-1}$. Values for $\Sigma_{tr}$ for typical reactor materials are found in table \ref{materials_table}. 
+	Equation \ref{eqn:multi_group} is a general description of multi-group neutron diffusion through a reactor core and reflector. The flux depends on the transport cross section, which is accounted for in the term D.  The relationship is defined by $D_m = 3 \Sigma_{tr}^{-1}$. Values for $\Sigma_{tr}$ for the reactor core and reflector are found in table \ref{2GXS_core_table} and \ref{2GXS_reflector_table}. 
 
 	
 \subsection{Numerical Approximation} \label{ssec:numerical}
-	It is rare to be faced with a design that allows for an analytical solution. Fortunately, numerical analysis methods exist that allow for approximation of the analytical solution. By dividing our hypothetical medium into discrete sections with nodes at the boundaries between these sections, it is possible to express the flux vector with equation \ref{eqn:linalg_flux}:
+	It is rare to be faced with a design that allows for an analytical solution. Fortunately, numerical analysis methods exist that allow for approximation of the analytical solution. By dividing our hypothetical medium into discrete sections with nodes at the boundaries between these sections and grouping neutrons into a set number of energy bins, it is possible to express the flux vector with equation \ref{eqn:linalg_flux}:
 	\begin{equation}
 		\opmat{A} \vec{\phi} = \opmat{F} \vec{\phi}
 		\label{eqn:linalg_flux}
 	\end{equation}
-	where $\vec{\phi}$ is the flux at each node. The operator $\opmat{F}$ describes the source of the multiplying medium.  Initial guesses of 1 were used forThe operator $\opmat{A}$ can be derived using the two-node approximation of the  second derivative formula:
+	where $\vec{\phi}$ is the flux at each node. The operator $\opmat{F}$ describes the source of the multiplying medium.  Initial guesses of 1 were used for both k and the source vector.  When using 2 groups, the operator $\opmat{A}$ can be derived from the following equations:
 	
 	\begin{equation*}
-		\left. \pdv[2]{\phi}{x} \right|_i \approx \frac{\phi_{i-1} - 2\phi_i + \phi_{i+1}}{\Delta x^2}
+		- \nabla \cdot D_{1} \nabla \phi_{1}+ \Sigma_{R_1} \phi_1 = \frac{1}{k} [nu_1 \Sigma_{f_1} \phi_{1} + nu_2 \Sigma_{f_2} \phi_{2}] 
+	\end{equation*}
+	
+	\begin{equation*}
+		- \nabla \cdot D_{2} \nabla \phi_{2}+ \Sigma_{a_2} \phi_2 = \Sigma_{s_{12}} \phi_1
 	\end{equation*}
 
+Only the first group has a fission source, while other groups gain neutrons from the downscatter of faster groups.
+
+The internal nodes of both the reactor core and reflector can be derived with the same process as Project 2 for cylindrical coordinates.  The following general equation was used to derive the internal nodes of the reflector and moderator  and initial boundary of moderator for the first group:
+
+\begin{equation*}
+		-D_m \frac{d^2 \phi}{d r^2} + \frac{1}{r} \frac{d \phi}{dx} + \Sigma_a \phi =   \frac{1}{k} \nu \Sigma^_mf_1 \phi
+	\end{equation*}
+	
+
+
+The resulting core contribution to matrix $\opmat{A}$ (for N nodes) is:
+
+\[
+	\begin{bmatrix}[1.5]
+		\frac{1}{2} \Sigma_a + \frac{D_m}{(2i-1)\Delta r^2} +\frac{D_m}{r^2} & -\frac{D_m}{(2i-1)\Delta r^2} - \frac{D_m}{r^2} & 0 & \dots & 0 \\
+		\frac{-D_m}{\Delta r^2} \left( 1 + \frac{1}{2i-1} \right) & \frac{2D_m}{\Delta r^2} + \Sigma_a &  \frac{-D_m}{\Delta r^2} \left( 1 - \frac{1}{2i-1} \right) & \dots & 0 \\
+		0 &  \frac{-D_m}{\Delta r^2} \left( 1 - \frac{1}{2i-1} \right) & \frac{2D_m}{\Delta r^2} + \Sigma_a & \frac{-D_m}{\Delta r^2} \left( 1 - \frac{1}{2i-1} \right) & 0\\
+		\dots & \dots \dots & \frac{2D_m}{\Delta r^2} + \Sigma_a & 0 \\
+		0 & 0 & 0 & -\frac{-D_m}{\Delta r^2} \left( 1 - \frac{1}{2i-1} \right) & \frac{2D_m}{\Delta r^2} + \Sigma_a
+	\end{bmatrix}
+	\]
+	
+The interface node is where the reactor core and reflector meet.  This means contributions from both materials must be accounted for.  The following left side of the finite-difference equation is derived for this special case:
+
+	\begin{equation}
+	\left( \frac{-D^m_1}{\delta r} + \frac{D^m_1}{2W} \right) \phi_{1,i-1} + \left( \frac{-D^m_1}{\delta r} + \frac{D^m_1}{2W} + \frac{\Sigma^m_{a,1} \delta r}{2} + \frac{D^R_1}{\delta r_R} + \frac{D^R_1}{2W} + \frac{\Sigma^R_{a,1} \delta r_R}{2} \right) \phi_{1,i} + \left( \frac{-D^R_1}{\delta r_R} + \frac{D^R_1}{2W} \right) \phi_{1,i+1}
+	\end{equation}
+
+
+	
 	For non-edge nodes and the far right node, the derivation can be performed as follows:
 	\begin{align*}
 		-D_m \dv[2]{\phi}{x} &+ \Sigma_a \phi = \frac{1}{k} \nu \Sigma^m_f \phi \\
