@@ -28,6 +28,8 @@ The internal nodes of both the reactor core and reflector can be derived with th
 \begin{equation*}
 		-D_m \frac{d^2 \phi}{d r^2} + \frac{1}{r} \frac{d \phi}{dx} + \Sigma_a \phi =   \frac{1}{k} \nu \Sigma^_mf_1 \phi
 	\end{equation*}
+	
+
 
 The resulting core contribution to matrix $\opmat{A}$ (for N nodes) is:
 
@@ -41,7 +43,11 @@ The resulting core contribution to matrix $\opmat{A}$ (for N nodes) is:
 	\end{bmatrix}
 	\]
 	
-The interface node is where the reactor core and reflector meet.  This means contributions from both materials must be accounted for.  The following finite-difference equation is derived for this special case:
+The interface node is where the reactor core and reflector meet.  This means contributions from both materials must be accounted for.  The following left side of the finite-difference equation is derived for this special case:
+
+	\begin{equation}
+	\left( \frac{-D^m_1}{\delta r} + \frac{D^m_1}{2W} \right) \phi_{1,i-1} + \left( \frac{-D^m_1}{\delta r} + \frac{D^m_1}{2W} + \frac{\Sigma^m_{a,1} \delta r}{2} + \frac{D^R_1}{\delta r_R} + \frac{D^R_1}{2W} + \frac{\Sigma^R_{a,1} \delta r_R}{2} \right) \phi_{1,i} + \left( \frac{-D^R_1}{\delta r_R} + \frac{D^R_1}{2W} \right) \phi_{1,i+1}
+	\end{equation}
 
 
 	
