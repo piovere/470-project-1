@@ -13,7 +13,9 @@
 		\opmat{A} \vec{\phi} = \opmat{F} \vec{\phi}
 		\label{eqn:linalg_flux}
 	\end{equation}
-	where $\vec{\phi}$ is the flux at each node. The operator $\opmat{F}$ describes the source of the multiplying medium.  Initial guesses of 1 were used for both k and the source vector.  The flux of each group must be solved using the previous equation  \ref{eqn:linalg_flux}.  Do note that the super or subscript m and R correspond to the core and reflector, respectively.  The number in the subscript corresponds to the group number.  When using 2 groups, the operator $\opmat{A}$ can be derived from the following equations:
+	where $\vec{\phi}$ is the flux at each node. The operator $\opmat{F}$ describes the source of the multiplying medium.  Initial guesses of 1 were used for both k and the source vector.  The flux of each group must be solved using the previous equation  \ref{eqn:linalg_flux}.  Do note that the super or subscript m and R correspond to the core and reflector, respectively.  The number in the subscript corresponds to the group number.  Also not that r and $r_R$ correspond to the radius of the core and reflector, respectively.  The initial radius of the core is denoted as W. 
+	
+	When using 2 groups, the operator $\opmat{A}$ can be derived from the following equations:
 	
 	\begin{equation*}
 		- \nabla \cdot D_{1} \nabla \phi_{1}+ \Sigma_{R_1} \phi_1 = \frac{1}{k} [nu_1 \Sigma_{f_1} \phi_{1} + nu_2 \Sigma_{f_2} \phi_{2}] 
@@ -82,7 +84,8 @@ Now let's take a look at the source terms.  For the fast group, the source term 
 		0 & \frac{1}{k} \nu \Sigma^m_f  & 0 & 0 & 0 & \dots \\
 		0 & 0 & \frac{1}{k} \nu \Sigma^m_f  & 0 & 0 & \dots\\
 		0 & 0 & 0 & \frac{1}{k} \nu \Sigma^m_f  & 0 & \dots \\
-		\dots & 0 & 0 & 0 & 0 & \frac{1}{2k} \nu \Sigma^m_f 
+		\dots & \dots & \dots & \dots & \dots & \dots \\
+		\dots & 0 & 0 & 0 & 0 & 0 \\
 	\end{bmatrix}
 	\]
 	
@@ -93,9 +96,11 @@ For the slow group, the final matrix $\opmat{F}$ (for N nodes) is:
 		\frac{1}{2} \Sigma^m_{s12} \phi_1  & 0 & 0 & 0 & \dots\\
 		0 & \Sigma^m_{s12} \phi_1 & 0 & 0 & \dots & \dots \\
 		0 & 0 & \Sigma^m_{s12} \phi_1 & 0 & 0 & \dots\\
-		0 & \dots & 0 & \frac{1}{2} \Sigma^m_{s12} \delta r + \frac{1}{2} \Sigma^R_{s12} \delta r_R  & 0 & \dots \\
+		0 & \dots & 0 & \frac{1}{2} \Sigma^m_{s12} \phi_1 \delta r + \frac{1}{2} \Sigma^R_{s12} \phi_1 \delta r_R  & 0 & \dots \\
 		\dots & 0 & 0 & 0 & \Sigma^R_{s12} \phi_1 & 0 \\
 		\dots & 0 & 0 & 0 & \dots & \Sigma^R_{s12} \phi_1 \\
+		\dots & \dots & \dots & \dots & \dots & \dots \\
+		\dots & 0 & 0 & 0 & \dots & 0 \\
 	\end{bmatrix}
 	\]
 
@@ -119,119 +124,36 @@ The following equations were solved to find the flux for each of the four groups
 	
 All the groups have a similar left side of their respective finite-difference equations, with the exception of the values of the cross sections and diffusion coefficients.  The main difference is in the source term for each group.  For the remaining groups, 3 and 4, the matrix $\opmat{F}$ (for N nodes) is:
 
+Group 3:
 \[
 	\begin{bmatrix}[1.5]
-		\frac{1}{2} \left( \Sigma^m_{s12} + \Sigma^m_{s23}   & 0 & 0 & 0 & \dots\\
-		0 & \Sigma^m_{s12}  & 0 & 0 & \dots & \dots \\
-		0 & 0 & \Sigma^m_{s12}  & 0 & 0 & \dots\\
-		0 & \dots & 0 & \frac{1}{2} \Sigma^m_{s12} \delta r + \frac{1}{2} \Sigma^R_{s12} \delta r_R  & 0 & \dots \\
-		\dots & 0 & 0 & 0 & \Sigma^R_{s12}  & 0 \\
-		\dots & 0 & 0 & 0 & \dots & \Sigma^R_{s12} \\
+		\frac{1}{2} \Sigma^m_{s13} \phi_1 + \frac{1}{2} \Sigma^m_{s23} \phi_2  & 0 & 0 & 0 & \dots\\
+		0 & \Sigma^m_{s13} \phi_1 + \Sigma^m_{s23} \phi_2 & 0 & 0 & \dots & \dots \\
+		0 & 0 & \Sigma^m_{s13} \phi_1 + \Sigma^m_{s23} \phi_2 & 0 & 0 & \dots\\
+		0 & \dots & 0 & \frac{1}{2} \delta r \left( \Sigma^m_{s13} \phi_1 + \Sigma^m_{s23} \phi_2 \right) + \frac{1}{2} \delta r_R \left( \Sigma^R_{s13} \phi_1 + \Sigma^R_{s23} \phi_2 \right) & 0 & \dots \\
+		\dots & 0 & 0 & 0 & \Sigma^R_{s13} \phi_1 + \Sigma^R_{s23} \phi_2  & 0 \\
+		\dots & 0 & 0 & 0 & \dots & \Sigma^R_{s13} \phi_1 + \Sigma^R_{s23} \phi_2 \\
+		\dots & \dots & \dots & \dots & \dots & \dots \\
+		\dots & 0 & 0 & 0 & \dots & 0 \\
 	\end{bmatrix}
 	\]
 	
-	For non-edge nodes and the far right node, the derivation can be performed as follows:
-	\begin{align*}
-		-D_m \dv[2]{\phi}{x} &+ \Sigma_a \phi = \frac{1}{k} \nu \Sigma^m_f \phi \\
-		-D_m \int_{x_i - \frac{\Delta x}{2}}^{x_i + \frac{\Delta x}{2}} \dv[2]{\phi}{x} \dd{x} &+ 
-			\int_{x_i - \frac{\Delta x}{2}}^{x_i + \frac{\Delta x}{2}} \Sigma_a \phi \dd{x} = \int_{x_i - \frac{\Delta x}{2}}^{x_i + \frac{\Delta x}{2}} \frac{1}{k} \nu \Sigma^m_f \phi_i \dd{x}\\
-		-D_m \left. \dv{\phi}{x} \right|_{x_i - \frac{\Delta x}{2}}^{x_i + \frac{\Delta x}{2}} &+ 
-			\int_{x_i - \frac{\Delta x}{2}}^{x_i + \frac{\Delta x}{2}} \Sigma_a \phi dx =  \frac{1}{k} \nu \Sigma^m_f \phi_i \int_{x_i - \frac{\Delta x}{2}}^{x_i + \frac{\Delta x}{2}} \dd{x} \\
-		-D_m \left( \frac{\phi_{i+1} - \phi_i}{\Delta x} - \frac{\phi_{i} - \phi_{i-1}}{\Delta x} \right) &+
-			\int_{x_i - \frac{\Delta x}{2}}^{x_i + \frac{\Delta x}{2}} \Sigma_a \phi dx = \frac{1}{k} \nu \Sigma^m_f \phi_i \left[ \left( x_i + \frac{\Delta x}{2} \right) - \left( x_i - \frac{\Delta x}{2} \right) \right] \\
-		-D_m \left( \frac{\phi_{i+1} - \phi_i}{\Delta x} - \frac{\phi_{i} - \phi_{i-1}}{\Delta x} \right) &+
-			\Sigma_a \phi_i \Delta x = \frac{1}{k} \nu \Sigma^m_f \phi_i \Delta x \\
-		\intertext{Dividing each term by $\Delta x$ gives:}
-		\left( \frac{-D_m}{\Delta x^2} \right) \phi_{i-1} + \left( \frac{2D_m}{\Delta x^2} + \Sigma_a \right)\phi_i + \left( \frac{-D_m}{\Delta x^2} \right) \phi_{i+1} = \frac{1}{k} \nu \Sigma^m_f \phi_i
-	\end{align*}
-	From this we see that our operator $\opmat{A}$ will have non-corner terms and right bottom corner terms:
-	**
-	\begin{bmatrix}[1.5]
-		\hdotsfor{5} \\
-		\frac{-D_m}{\Delta x^2} & \frac{2D_m}{\Delta x^2} + \Sigma_a & \frac{-D_m}{\Delta x^2} & 0 & \dots \\
-		0 & \frac{-D_m}{\Delta x^2} & \frac{2D_m}{\Delta x^2} + \Sigma_a & \frac{-D_m}{\Delta x^2} & \dots \\
-		& & \ddots & & \\
-		\dots & 0 & \frac{-D_m}{\Delta x^2} & \frac{2D_m}{\Delta x^2} + \Sigma_a & \frac{-D_m}{\Delta x^2} \\
-	\end{bmatrix}
-	\begin{align*}
-		\vec{J}\left(0\right) = \eval{-D_m \dv{\phi}{x}}_0 \numberthis \label{eqn:leftboundary}
-	\end{align*}
-	**
-	We then solve for our top row using the boundary condition in equation \ref{eqn:leftboundary}: 
-	\begin{align*}
-		-D_m \frac{\phi_1 - \phi_0}{\Delta x} + D_m \left. \dv{\phi}{x} \right|_0 + \int_0^{\Delta x / 2} 
-			\Sigma_a \phi dx =   \frac{1}{k} \nu \Sigma^m_f \phi \\
-		-D_m \frac{\phi_1 - \phi_0}{\Delta x} +  \int_0^{\Delta x / 2} 
-			\Sigma_a \phi dx = \int_0^{\Delta x / 2}  \frac{1}{k} \nu \Sigma^m_f \phi dx \\
-		-D_m \frac{\phi_1 - \phi_0}{\Delta x} + \Sigma_a \phi_0 \int_0^{\Delta x / 2}
-			dx = \frac{1}{k} \nu \Sigma^m_f \phi0i \int_0^{\Delta x / 2} dx \\
-			-D_m \frac{\phi_1 - \phi_0}{\Delta x} + \Sigma_a \phi_0  \frac{\Delta x}{2} = \frac{1}{k} \nu \Sigma^m_f \phi_0 \frac{\Delta x}{2} \\
-	\intertext{Divide by $\Delta x$ on both sides:}
-		-D_m \frac{\phi_1 - \phi_0}{\Delta x^2}  + \frac{1}{2} \Sigma_a \phi_0 =  \frac{1}{k} \nu \Sigma^m_f \phi_0 \frac{1}{2} \\
-		\frac{-D_m}{\Delta x^2} \phi_1 + \left( \frac{D}{\Delta x^2} + \frac{1}{2} \Sigma_a \right) \phi_0 = \frac{1}{2k} \nu \Sigma^m_f \phi_0
-	\end{align*}
-	This gives a final matrix $\opmat{A}$ (for N nodes):
-	\[
-	\begin{bmatrix}[1.5]
-		\frac{D_m}{\Delta x^2} + \frac{1}{2}\Sigma_a & - \frac{-D_m}{\Delta x^2} & 0 & 0 & \dots & 0\\
-		- \frac{-D_m}{\Delta x^2} & \frac{2D_m}{\Delta x^2} + \Sigma_a & - \frac{-D_m}{\Delta x^2} & 0 & \dots & 0 \\
-		0 & - \frac{-D_m}{\Delta x^2} & \frac{2D_m}{\Delta x^2} + \Sigma_a & - \frac{-D_m}{\Delta x^2} & \dots & 0 \\
-		0 & 0 & - \frac{-D_m}{\Delta x^2} & \frac{2D}{\Delta x^2} + \Sigma_a & \dots & 0 \\
-		\dots & \dots & \dots \dots & \frac{D_m}{\Delta x^2} + \frac{1}{2}\Sigma_a & - \frac{-D_m}{\Delta x^2} \\
-		0 & \dots & 0 & 0 - \frac{-D_m}{\Delta x^2} & \frac{2 D_m}{\Delta x^2} + \frac{1}{2}\Sigma_a
-	\end{bmatrix}
-	\]
-
-
-This gives a final matrix $\opmat{F}$ (for N nodes):
-	\[
-	\begin{bmatrix}[1.5]
-		\frac{1}{2k} \nu \Sigma_f \phi_0  \\
-		\frac{1}{k} \nu \Sigma_f \phi_1  \\
-		\frac{1}{k} \nu \Sigma_f \phi_2  \\
-		\frac{1}{k} \nu \Sigma_f \phi_3  \\
-		\dots \\
-		\frac{1}{k} \nu \Sigma_f \phi_{N-1}
-	\end{bmatrix}
-	\]
-	
-A similar method was used to find matrix $\opmat{A}$ for cylindrical and spherical coordinates.  However the center averaged method was used to maneuver $\phi$.
-
-For cylindrical coordinates, the following equation was used to derive $\opmat{A}$:
-
-\begin{equation*}
-		-D_m \frac{d^2 \phi}{d r^2} + \frac{1}{r} \frac{d \phi}{dx} + \Sigma_a \phi =   \frac{1}{k} \nu \Sigma^m_f \phi
-	\end{equation*}
-	
-The resulting matrix $\opmat{A}$ (for N nodes) is:
+Group 4:
 
 \[
 	\begin{bmatrix}[1.5]
-		\frac{1}{2} \Sigma_a + \frac{D_m}{(2i-1)\Delta r^2} +\frac{D_m}{r^2} & -\frac{D_m}{(2i-1)\Delta r^2} - \frac{D_m}{r^2} & 0 & \dots & 0 \\
-		\frac{-D_m}{\Delta r^2} \left( 1 + \frac{1}{2i-1} \right) & \frac{2D_m}{\Delta r^2} + \Sigma_a & - \frac{-D_m}{\Delta r^2} \left( 1 - \frac{1}{2i-1} \right) & \dots & 0 \\
-		0 & - \frac{-D_m}{\Delta r^2} \left( 1 - \frac{1}{2i-1} \right) & \frac{2D_m}{\Delta r^2} + \Sigma_a & \frac{-D_m}{\Delta r^2} \left( 1 - \frac{1}{2i-1} \right) & 0\\
-		\dots & \dots \dots & \frac{2D_m}{\Delta r^2} + \Sigma_a & 0 \\
-		0 & 0 & 0 & -\frac{-D_m}{\Delta r^2} \left( 1 - \frac{1}{2i-1} \right) & \frac{2D_m}{\Delta r^2} + \Sigma_a
+		\frac{1}{2} \Sigma^m_{s14} \phi_1 + \frac{1}{2} \Sigma^m_{s24} \phi_2 + \frac{1}{2} \Sigma^m_{s34} \phi_3 & 0 & 0 & 0 & \dots\\
+		0 & \Sigma^m_{s13} \phi_1 + \Sigma^m_{s24} \phi_2 + \Sigma^m_{s34} \phi_3 & 0 & 0 & \dots & \dots \\
+		0 & 0 & \Sigma^m_{s14} \phi_1 + \Sigma^m_{s23} \phi_2 & 0 & 0 & \dots\\
+		0 & \dots & 0 & \frac{1}{2} \delta r \left( \Sigma^m_{s14} \phi_1 + \Sigma^m_{s24} \phi_2 + \Sigma^m_{s34} \phi_3 \right) + \frac{1}{2} \delta r_R \left( \Sigma^R_{s14} \phi_1 + \Sigma^m_{s24} \phi_2 + \Sigma^R_{s34} \phi_3 \right) & 0 & \dots \\
+		\dots & 0 & 0 & 0 & \Sigma^R_{s14} \phi_1 + \Sigma^m_{s24} \phi_2  + \Sigma^R_{s34} \phi_3 & 0 \\
+		\dots & 0 & 0 & 0 & \dots & \Sigma^R_{s14} \phi_1 + \Sigma^m_{s24} \phi_2 + \Sigma^R_{s34} \phi_3 \\
+		\dots & \dots & \dots & \dots & \dots & \dots \\
+		\dots & 0 & 0 & 0 & \dots & 0 \\
 	\end{bmatrix}
 	\]
-
-For spherical coordinates, the following equation was used to derive $\opmat{A}$:
-
-\begin{equation*}
-		-D_m \frac{d^2 \phi}{d r^2} + \frac{2}{r} \frac{d \phi}{dx} + \Sigma_a \phi =   \frac{1}{k} \nu \Sigma^m_f \phi
-	\end{equation*}
-
-The resulting matrix $\opmat{A}$ (for N nodes) is:
-
-\[
-	\begin{bmatrix}[1.5]
-		\frac{1}{2} \Sigma_a + \frac{2 D_m}{(2i-1)\Delta r^2} +\frac{D_m}{r^2} & -\frac{D_m}{(2i-1)\Delta r^2} - \frac{2 D_m}{r^2} & 0 & \dots & 0 \\
-		\frac{-D_m}{\Delta r^2} \left( 1 + \frac{2}{2i-1} \right) & \frac{2D_m}{\Delta r^2} + \Sigma_a & - \frac{-D_m}{\Delta r^2} \left( 1 - \frac{2}{2i-1} \right) & \dots & 0 \\
-		0 & \frac{-D_m}{\Delta r^2} \left( 1 - \frac{2}{2i-1} \right) & \frac{2D_m}{\Delta r^2} + \Sigma_a & \frac{-D_m}{\Delta r^2} \left( 1 - \frac{2}{2i-1} \right) & 0\\
-		\dots & \dots \dots & \frac{2D_m}{\Delta r^2} + \Sigma_a & 0 \\
-		0 & 0 & 0 & -\frac{-D_m}{\Delta r^2} \left( 1 - \frac{2}{2i-1} \right) & \frac{2D_m}{\Delta r^2} + \Sigma_a
-	\end{bmatrix}
-	\]
+	
+	
 
 
 \end{document}
