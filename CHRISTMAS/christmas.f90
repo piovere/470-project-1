@@ -161,7 +161,7 @@ do p=1,g
 
    A(n,n-1,p) = -sigma_tr(p,1)/(dr1)  
    A(n,n+1,p) =  -sigma_tr(p,2)/(dr2) 
-   A(n,n,p)=(sigma_tr(p,2)/(dr2)+sigma_tr(p,2)/(dr2))+(sigma_a(p,2)*dr2+sigma_r(p,1)*dr1)/2.0
+   A(n,n,p)=(sigma_tr(p,1)/(dr1)+sigma_tr(p,2)/(dr2))+(sigma_a(p,2)*dr2+sigma_r(p,1)*dr1)/2.0
 
    do i=2 , n-1
  
