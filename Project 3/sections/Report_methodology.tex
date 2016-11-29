@@ -13,7 +13,7 @@
 		\opmat{A} \vec{\phi} = \opmat{F} \vec{\phi}
 		\label{eqn:linalg_flux}
 	\end{equation}
-	where $\vec{\phi}$ is the flux at each node. The operator $\opmat{F}$ describes the source of the multiplying medium.  Initial guesses of 1 were used for both k and the source vector.  THe flux of each group must be solved using the previous equation  \ref{eqn:linalg_flux}.  When using 2 groups, the operator $\opmat{A}$ can be derived from the following equations:
+	where $\vec{\phi}$ is the flux at each node. The operator $\opmat{F}$ describes the source of the multiplying medium.  Initial guesses of 1 were used for both k and the source vector.  The flux of each group must be solved using the previous equation  \ref{eqn:linalg_flux}.  Do note that the super or subscript m and R correspond to the core and reflector, respectively.  The number in the subscript corresponds to the group number.  When using 2 groups, the operator $\opmat{A}$ can be derived from the following equations:
 	
 	\begin{equation*}
 		- \nabla \cdot D_{1} \nabla \phi_{1}+ \Sigma_{R_1} \phi_1 = \frac{1}{k} [nu_1 \Sigma_{f_1} \phi_{1} + nu_2 \Sigma_{f_2} \phi_{2}] 
@@ -45,7 +45,23 @@ The resulting contribution from the core to matrix $\opmat{A}$ (for N nodes) is:
 	\end{bmatrix}
 	\]
 	
-The interface node is where the reactor core and reflector meet.  This means contributions from both materials must be accounted for.  The following left side of the finite-difference equation is derived for this special case:
+This part of the matrix $\opmat{A}$ is located at the top left of the entire matrix.
+	
+The resulting contribution from the reflector to matrix $\opmat{A}$ (for N nodes) is:
+
+\[
+	\begin{bmatrix}[1.5]
+		\frac{-D_R}{\Delta r_R^2} \left( 1 + \frac{1}{2i-1} \right) & \frac{2D_R}{\Delta r_R^2} + \Sigma^R_a &  \frac{-D_R}{\Delta r_R^2} \left( 1 - \frac{1}{2i-1} \right) & \dots & 0 \\
+		0 &  \frac{-D_R}{\Delta r_R^2} \left( 1 - \frac{1}{2i-1} \right) & \frac{2D_R}{\Delta r_R^2} + \Sigma^R_a & \frac{-D_R}{\Delta r_R^2} \left( 1 - \frac{1}{2i-1} \right) & 0\\
+		\dots & \dots \dots & \frac{2D_R}{\Delta r_R^2} + \Sigma_a & 0 \\
+		0 & 0 & 0 & -\frac{-D_R}{\Delta r_R^2} \left( 1 - \frac{1}{2i-1} \right) & \frac{2D_R}{\Delta r^_R2} + \Sigma^R_a
+	\end{bmatrix}
+	\]
+
+This part of the matrix $\opmat{A}$ is located at the bottom right of the entire matrix.
+
+	
+Connecting the reactor core and reflector is the interface node.  This means contributions from both materials must be accounted for at that point.  The following left side of the finite-difference equation is derived for this special case:
 
 	\begin{equation}
 	\left( \frac{-D^m_1}{\delta r} + \frac{D^m_1}{2W} \right) \phi_{1,i-1} + \left( \frac{-D^m_1}{\delta r} + \frac{D^m_1}{2W} + \frac{\Sigma^m_{a,1} \delta r}{2} + \frac{D^R_1}{\delta r_R} + \frac{D^R_1}{2W} + \frac{\Sigma^R_{a,1} \delta r_R}{2} \right) \phi_{1,i} + \left( \frac{-D^R_1}{\delta r_R} + \frac{D^R_1}{2W} \right) \phi_{1,i+1}
@@ -57,19 +73,31 @@ The finite-difference equation for the reflector is solved with the same method,
 	\frac{-D_R}{\Delta r_R^2} \left( 1 + \frac{1}{2i-1} \right) \phi_{1,i-1} + \left( \frac{2D_R}{\Delta r_R^2} + \Sigma_{a,1} \right) \phi_{1,i} + \frac{-D_R}{\Delta r_R^2} \left( 1 - \frac{1}{2i-1} \right) \phi_{1,i+1}
 	\end{equation}
 	
-For the fast group, the source term  is the fission term.  This gives a final matrix $\opmat{F}$ (for N nodes):
+Ther terms from this equation is implented in the matrix in the row between the core and reflector contributions.
+
+Now let's take a look at the source terms.  For the fast group, the source term  is the fission term.  This gives a final matrix $\opmat{F}$ (for N nodes):
 	\[
 	\begin{bmatrix}[1.5]
-		\frac{1}{2k} \nu \Sigma_f \phi_0  \\
-		\frac{1}{k} \nu \Sigma_f \phi_1  \\
-		\frac{1}{k} \nu \Sigma_f \phi_2  \\
-		\frac{1}{k} \nu \Sigma_f \phi_3  \\
-		\dots \\
-		\frac{1}{k} \nu \Sigma_f \phi_{N-1}
+		\frac{1}{2k} \nu \Sigma^m_f  & 0 & 0 & 0 & \dots\\
+		0 & \frac{1}{k} \nu \Sigma^m_f  & 0 & 0 & 0 & \dots \\
+		0 & 0 & \frac{1}{k} \nu \Sigma^m_f  & 0 & 0 & \dots\\
+		0 & 0 & 0 & \frac{1}{k} \nu \Sigma^m_f  & 0 & \dots \\
+		\dots & 0 & 0 & 0 & 0 & \frac{1}{2k} \nu \Sigma^m_f 
 	\end{bmatrix}
 	\]
 	
-For the slow group,
+For the slow group, the final matrix $\opmat{F}$ (for N nodes) is:
+
+\[
+	\begin{bmatrix}[1.5]
+		\frac{1}{2} \Sigma^m_{s12} \phi_1  & 0 & 0 & 0 & \dots\\
+		0 & \Sigma^m_{s12} \phi_1 & 0 & 0 & \dots & \dots \\
+		0 & 0 & \Sigma^m_{s12} \phi_1 & 0 & 0 & \dots\\
+		0 & \dots & 0 & \frac{1}{2} \Sigma^m_{s12} \delta r + \frac{1}{2} \Sigma^R_{s12} \delta r_R  & 0 & \dots \\
+		\dots & 0 & 0 & 0 & \Sigma^R_{s12} \phi_1 & 0 \\
+		\dots & 0 & 0 & 0 & \dots & \Sigma^R_{s12} \phi_1 \\
+	\end{bmatrix}
+	\]
 
 The following equations were solved to find the flux for each of the four groups:
 
@@ -88,8 +116,19 @@ The following equations were solved to find the flux for each of the four groups
 	\begin{equation*}
 		- \nabla \cdot D_{4} \nabla \phi_{4}+ \Sigma_{a_4} \phi_4 = \Sigma_{s_{14}} \phi_1 + \Sigma_{s_{24}} \phi_2 + \Sigma_{s_{34}} \phi_3
 	\end{equation*}
+	
+All the groups have a similar left side of their respective finite-difference equations, with the exception of the values of the cross sections and diffusion coefficients.  The main difference is in the source term for each group.  For the remaining groups, 3 and 4, the matrix $\opmat{F}$ (for N nodes) is:
 
-
+\[
+	\begin{bmatrix}[1.5]
+		\frac{1}{2} \left( \Sigma^m_{s12} + \Sigma^m_{s23}   & 0 & 0 & 0 & \dots\\
+		0 & \Sigma^m_{s12}  & 0 & 0 & \dots & \dots \\
+		0 & 0 & \Sigma^m_{s12}  & 0 & 0 & \dots\\
+		0 & \dots & 0 & \frac{1}{2} \Sigma^m_{s12} \delta r + \frac{1}{2} \Sigma^R_{s12} \delta r_R  & 0 & \dots \\
+		\dots & 0 & 0 & 0 & \Sigma^R_{s12}  & 0 \\
+		\dots & 0 & 0 & 0 & \dots & \Sigma^R_{s12} \\
+	\end{bmatrix}
+	\]
 	
 	For non-edge nodes and the far right node, the derivation can be performed as follows:
 	\begin{align*}
