@@ -15,7 +15,7 @@ real(real64), allocatable :: ipiv(:)                ! pivoting array for LAPACK
 real(real64), allocatable :: chi(:)                 ! fission population birthrate (only fast)
 integer                   :: n, g,n_flector, n_tot         ! n=number of spatial nodes, g=energy groups
 integer                   :: info            
-real(real64), allocatable :: sigma_a(:,:), sigma_s(:,:), sigma_tr(:,:),sigma_fnu(:), sigma_r(:,:)      
+real(real64), allocatable :: sigma_a(:,:), sigma_s(:,:), sigma_tr(:,:),sigma_fnu(:,:), sigma_r(:,:)      
 real(real64)              :: w, ratio, dr1, dr2   
 real(real64), allocatable :: b_old(:,:), S(:)
 !------------------------Used for Iteration loop--------------------------!
@@ -43,21 +43,17 @@ print *,'Number of Energy groups?'
 read *,g
 n=n-1
 n_tot=(n+n_flector)
-allocate (A(n_tot,n_tot,g),b(n_tot,g),ipiv(n_tot),b_old(n_tot,g),S(n_tot))   ! Used in diff eqs
+allocate (A(n_tot,n_tot,g),b(n_tot,g),ipiv(n_tot),b_old(n_tot,g),S(n_tot),sigma_fnu(n_tot,g))   ! Used in diff eqs
 w=10
 !---------------------Matrix Constants Declaration------------------------!
 
-allocate (sigma_a(g,2), sigma_s(g,g), sigma_tr(g,2),chi(g),sigma_fnu(g),sigma_r(g,2))
+allocate (sigma_a(g,2), sigma_s(g,g), sigma_tr(g,2),chi(g),sigma_r(g,2))
 
 j_tot = 0
 j_width=0
 
-
-chi=1_real64   
-chi(1)=0.5_real64   
-
 sigma_s=0.0
-
+sigma_fnu=0.0
 !------------------------G=4 declarations---------------------------------!
 if(g .eq. 4)then
     sigma_s(1,1)=0.37045
@@ -87,10 +83,12 @@ if(g .eq. 4)then
 
 
              !------------ Core is below-------------!              
-    sigma_fnu(1)=0.009572 
-    sigma_fnu(2)=0.001193
-    sigma_fnu(3)=0.01768
-    sigma_fnu(4)=0.18514
+    do i=1,n
+        sigma_fnu(i,1)=0.009572 
+        sigma_fnu(i,2)=0.001193
+        sigma_fnu(i,3)=0.01768
+        sigma_fnu(i,4)=0.18514
+    enddo
 
     sigma_a(1,1)=0.004946
     sigma_a(2,1)=0.002840
@@ -123,9 +121,10 @@ elseif(g .eq. 2)then
 
 
              !------------ Core is below-------------!              
-    sigma_fnu(1)=0.008476 
-    sigma_fnu(2)=0.18514
-
+    do i=1,n    
+        sigma_fnu(i,1)=0.008476 
+        sigma_fnu(i,2)=0.18514
+    enddo
 
     sigma_a(1,1)=0.01207
     sigma_a(2,1)=0.121
@@ -151,46 +150,44 @@ endif
 100 dr1 = w/n                               ! Step Size
 dr2 = w*ratio/n_flector
 A=0
-!print *,sigma_tr(1,2)
+
 
 do p=1,g
-   A(1,1,p) = (0.5_real64   *sigma_r(p,1))+(2.0*sigma_tr(p,1)/(dr1**2))
-   A(1,2,p) = -sigma_tr(p,1)/(dr1**2.0)
+   A(1,1,p) = (sigma_r(p,1)*dr1)+(2.0*sigma_tr(p,1)/(dr1))
+   A(1,2,p) = -sigma_tr(p,1)/(dr1)
 
-   A(n_tot,n_tot,p) = sigma_r(1,2)+2.0_real64   *sigma_tr(p,2)/(dr2**2)
-   A(n_tot,n_tot-1,p) = -sigma_tr(p,2)/(dr2**2)*(1-1/(2*n_tot-1))
+   A(n_tot,n_tot,p) = sigma_a(1,2)*dr2 + 2.0_real64   *sigma_tr(p,2)/(dr2)
+   A(n_tot,n_tot-1,p) = -sigma_tr(p,2)/(dr2)*(1-1/(2*n_tot-1))
 
-   A(n,n-1,p) = -sigma_tr(p,1)/(dr1)  -sigma_tr(p,1)/(2.0*w)
-   A(n,n+1,p) =  -sigma_tr(p,2)/(dr1)  -sigma_tr(p,2)/(2.0*w)
-   A(n,n,p)=(-sigma_tr(p,2)/(dr2)+sigma_tr(p,2)/(2.0*w))+(-A(n,n-1,p))+(sigma_r(p,2)*dr2+sigma_r(p,1)*dr1)/2.0
+   A(n,n-1,p) = -sigma_tr(p,1)/(dr1)  
+   A(n,n+1,p) =  -sigma_tr(p,2)/(dr2) 
+   A(n,n,p)=(sigma_tr(p,2)/(dr2)+sigma_tr(p,2)/(dr2))+(sigma_a(p,2)*dr2+sigma_r(p,1)*dr1)/2.0
 
    do i=2 , n-1
  
-      A(i,i,p) = sigma_r(p,1) + 2.0_real64   *sigma_tr(p,1)/(dr1**2)
-      A(i,i+1,p) = -(1+1/(2.0*i-1))*sigma_tr(p,1)/(dr1**2)
-      A(i,i-1,p) = -(1-1/(2.0*i-1))*sigma_tr(p,1)/(dr1**2)
+      A(i,i,p) = sigma_r(p,1) *dr1 + 2.0_real64   *sigma_tr(p,1)/(dr1)
+      A(i,i+1,p) = -(1+1/(2.0*i-1))*sigma_tr(p,1)/(dr1)
+      A(i,i-1,p) = -(1-1/(2.0*i-1))*sigma_tr(p,1)/(dr1)
 
    enddo
-   do i=n+1 , n_tot
+   do i=n+1 , n_tot-1
 
-      A(i,i,p) = sigma_r(p,2)+2.0_real64   *sigma_tr(p,2)/(dr2**2)
-      A(i,i+1,p) = -sigma_tr(p,2)/(dr2**2)*(1+1/(2.0*i-1))
-      A(i,i-1,p) = -sigma_tr(p,2)/(dr2**2)*(1-1/(2.0*i-1))
+      A(i,i,p) = sigma_a(p,2)*dr2+ 2.0_real64   *sigma_tr(p,2)/(dr2)
+      A(i,i+1,p) = -sigma_tr(p,2)/(dr2)*(1+1/(2.0*i-1))
+      A(i,i-1,p) = -sigma_tr(p,2)/(dr2)*(1-1/(2.0*i-1))
 
    enddo
 enddo
 ! Pretty matrix printing
 ! From http://jblevins.org/log/array-write
-! do i=1,n_tot
-!     write(*,"(10g15.5)") ( A(i,j,1), j=1,n_tot )
-! enddo
+
 
     !LU factorization of a general M-by-N matrix A
     ! See: http://www.netlib.org/lapack/explore-html/d3/d6a/dgetrf_8f.html
     do p=1,g    
         call DGETRF(n_tot, n_tot, A(:,:,p), n_tot, ipiv, info)
-!        if (info /= 0) stop 'Matrix is numerically singular!'
-!        print *,'HELP ME'
+        if (info /= 0) stop 'Matrix is numerically singular!'
+
     enddo
 !-------------------------Business loop-----------------------------------!
 !-------------------------------------------------------------------------!
@@ -199,16 +196,12 @@ enddo
 b = 1.0
 k=1.0
 S=0
-    do p=1,g
-        do i=1,n_tot
-        if(i .lt. n)then
-            S(i)= S(i)+sigma_fnu(p)*b(i,p)
-        else
-            S(i)=0.0   
-        endif
-        enddo
+do p=1,g
+    do i=1,n_tot
+        S(i)= S(i)+dr1*sigma_fnu(i,p)*b(i,p)/2.0
     enddo
-S(1)=S(1)/2.0
+enddo
+
 j=0
 
 k_error = 1.0
@@ -222,13 +215,15 @@ do while ( ((b_error .gt. min_error) .or. (k_error .gt. min_error)) .and. (j .lt
 
 
 !------------------Eigenvalue Search--------------------------------------!
+    b=0
     do p=1,g
         if(p .gt. 1)then
             do i=p, g
-                b(:,p)= b(:,p) + sigma_s(i,p)*b(:,i)
+                b(:,p)= b(:,p) + sigma_s(i,p)*b_old(:,p)
             enddo
         endif
-        if(p .eq. 1) b(:,p)=b(:,p)+S*b(:,p)/k
+        if(p .eq. 1) b(:,1)=S/k
+
         call DGETRS('N', n_tot, 1, A(:,:,p), n_tot, ipiv, b(:,p), n_tot, info) 
         if (info /= 0) stop 'Solution of the linear system failed!'
 
@@ -243,15 +238,10 @@ do while ( ((b_error .gt. min_error) .or. (k_error .gt. min_error)) .and. (j .lt
     S=0
     do p=1,g
         do i=1,n_tot
-        if(i .lt. n+1)then
-            S(i)= S(i)+sigma_fnu(p)*b(i,p)
-
-        else
-            S(i)=0.0   
-        endif
+            S(i)= S(i)+dr1*sigma_fnu(i,p)*b(i,p)/2.0
         enddo
     enddo
-    S(1)=S(1)/2.0
+
 
     k = k_old *norm2(S)/ m_old                 
     k_error = abs((k-k_old)/k)
@@ -260,19 +250,15 @@ do while ( ((b_error .gt. min_error) .or. (k_error .gt. min_error)) .and. (j .lt
         chi(p)=maxval(abs(b(:,p) - b_old(:,p)))/maxval(b_old(:,p))
     enddo
     b_error=maxval(chi)
-
+    
    do i=1,g
         b(:,i)  = b(:,i) / norm2(b(:,i) )
     enddo
 enddo
-!print *, (b_error .gt. min_error)  
-!print *, (k_error .gt. min_error)
-!print *, (j .lt. MAX_ITERATIONS)
+
 j_tot=j_tot+j
-if(j_width .eq. 500)goto 12
-print *,j_width
 !-------------------------width adjustments for k=1-----------------------!
-print *,''
+
   if(k .lt. 1.0-min_error)then
      w=1.1*w
     j_width=j_width+1
@@ -288,7 +274,8 @@ print *,''
 12 continue
 !-------------------------VOMIT RESULTS-----------------------------------!
 print *,'Number of iterations until convergence:  ', j_tot
-print *,'Critical width:  ', 2.0*w
+print *,'Critical width:  ', 2.0*(1+ratio)*w
+print *,'K-value is',k
 
 open( unit = 77, file= "Flux1Group.dat")
 open( unit = 66, file= "Flux2Group.dat")
