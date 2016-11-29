@@ -5,15 +5,17 @@
 Proving the capabilities and safety of a reactor design requires effective modeling of the neutron flux in the core (expressed in equation \ref{eqn:transport}). For real cores, however, this is impossible, and must be first simplified, then discretized to provide the solution for a representative mesh. Certain simplifications can be applied to help make the problem easier to solve, since it allows the time dependent terms to be removed.
 
 1) Isotropic assumption: ignoring the direction of the incoming neutron. This effectively drops all terms involving Ωˆ
-2) Discretized energies:  Neutrons ar placed into energy bins
-3) Interface between the moderator and reflector material.
-4) Steady-state assumption: assuming that the system has been in this state for a long period and that no transients occur.
+2) Discretized energies:  Neutrons ar placed into energy bins or groups
+3) There is an interface between the moderator and reflector material.
+4) Steady-state assumption: assuming that the system has been in this state for a long period and that no transients occur
+5) There is no flux outside of the reflector.
+6) All neutrons are born fast.
 
 
 
-	For this project we have analyzed a cylindrical fuel pin surrounded by a cylindrical reflector.  The previous assumptions simplify the transport equation to that presented in equation \ref{eqn:multi_group}.
+	For this project we have analyzed a cylindrical fuel pin surrounded by a cylindrical reflector.  The previous assumptions transform the transport equation to that presented in equation \ref{eqn:multi_group}.
 
-	In the following sections, we will first describe the terms in equation \ref{eqn:multi_group}, then provide an analytical solution. The flux will also be analyzed in the cylindrical system using a programmed coded with a chosen number of nodes and groups. We will also provide an analysis of the accuracy of the analysis as a function of the number of nodes and number of groups. 
+	In the following sections, we will first describe the terms in equation \ref{eqn:multi_group}, then provide an analytical solution. The flux will also be analyzed in the cylindrical system using a programmed Fortran code with a chosen number of nodes and groups. We will also provide an analysis of the accuracy of the analysis as a function of the number of nodes and number of groups. 
 
 	
 	%\begin{strip}
@@ -43,26 +45,70 @@ The following eigenvector problem must be solved:
   
   	\begin{table*}
 		\begin{center}
-		\begin{tabular}{ c c c c c }
+		\begin{tabular}{ c c c }
 			\hline
-			\textit{Material} & $ \Sigma_{tr}(\si{cm^{-1}}) $ & $ \Sigma_a (\si{cm^{-1}}) $ & $ \nu \Sigma_f (\si{cm^{-1}}) $ & \textit{Relative Absorption} \\
+			\textit{Group Constant} & \textit{Group 1} & \textit{Group 2} \\
 			\hline
-			\ce{H} & \num{1.79e-2} & \num{8.08e-3} & 0 & \num{0.053} \\
-			\ce{O} & \num{7.16e-3} & \num{4.90e-6} & \num{0} & \num{0}\\
-			\ce{Zr} & \num{2.91e-3} & \num{7.01e-4} & \num{0} & \num{0.005} \\
-			\ce{Fe} & \num{9.46e-4} & \num{3.99e-3} & \num{0} & \num{0.026} \\
-			\ce{^{235}U} & \num{3.08e-4} & \num{9.24e-2} & \num{0.145} & \num{0.602} \\
-			\ce{^{238}U} &\num{6.95e-3} & \num{1.39e-2} & \num{1.20e-2} & \num{0.091} \\
-			\ce{^{10}B} & \num{8.77e-6} & \num{3.41e-2} & \num{0} & \num{0.223} \\
-			\hline
-			& \num{3.62e-2} & \num{0.1532} & \num{0.1570} & \num{1.000} \\
+			\ce{\nu \Sigma_f} & \num{0.008476} & \num{0.18514} \\
+			\ce{\Sigma_f} & \num{0.003320} & \num{0.07537} \\
+			\ce{\Sigma_a} & \num{0.01207} & \num{0.1210} \\
+			\ce{D} & \num{1.2627} & \num{0.3543}  \\
+			\ce{\Sigma_R} & \num{0.02627} & \num{0.1210} \\
 			\hline
 		\end{tabular}
-		\label{materials_table}
-		\caption{Macroscopic Cross Sections}
+		\label{2GXS__core_table}
+		\caption{Reactor Core Cross Sections for Two Groups}
 		\end{center}
 	\end{table*}
 
-
+\begin{table*}
+		\begin{center}
+		\begin{tabular}{ c c c }
+			\hline
+			\textit{Group Constant} & \textit{Group 1} & \textit{Group 2} \\
+			\hline
+			\ce{\Sigma_a} & \num{0.0004} & \num{0.0197} \\
+			\ce{D} & \num{1.13} & \num{0.16}  \\
+			\ce{\Sigma_R = \Sigma_{s12}} & \num{0.0494} & \ce{--} \\
+			\hline
+		\end{tabular}
+		\label{2GXS_reflector_table}
+		\caption{Water Reflector Cross Sections for Two Groups}
+		\end{center}
+	\end{table*}
+	
+\begin{table*}
+		\begin{center}
+		\begin{tabular}{ c c c c c}
+			\hline
+			\textit{Group Constant} & \textit{Group 1} & \textit{Group 2} & \textit{Group 3} & \textit{Group 4}\\
+			\hline
+			\ce{\nu \Sigma_f} & \num{0.009572} & \num{0.001193} & \num{0.01768} & \num{0.18514}\\
+			\ce{\Sigma_f} & \num{0.003378} & \num{0.0004850} & \num{0.006970} & \num{0.07527}\\
+			\ce{\Sigma_a} & \num{0.004946} & \num{0.002840} & \num{0.03053} & \num{0.1210}\\
+			\ce{D} & \num{2.1623} & \num{1.0867} & \num{0.6318} & \num{0.3543}\\
+			\ce{\Sigma_R} & \num{0.08785} & \num{0.06124} & \num{0.09506} & \num{0.1210}\\
+			\hline
+		\end{tabular}
+		\label{4GXS__core_table}
+		\caption{Reactor Core Cross Sections for Four Groups}
+		\end{center}
+	\end{table*}
+	
+\begin{table*}
+		\begin{center}
+		\begin{tabular}{ c c c }
+			\hline
+			\textit{Group Constant} & \textit{Group 1} & \textit{Group 2} & \textit{Group 3} & \textit{Group 4}\\
+			\hline
+			\ce{\Sigma_a} & \num{0.00051} & \num{0.00354} & \num{0.01581} & \num{0.04637}\\
+			\ce{\Sigma_{tr}} & \num{0.20608} & \num{0.60215} & \num{0.56830} & \num{1.21110}\\
+			\ce{\Sigma_R} & \num{0.08785} & \num{0.06124} & \num{0.09506} & \num{0.1210}\\
+			\hline
+		\end{tabular}
+		\label{4GXS__reflector_table}
+		\caption{Water Reflector Cross Sections for Four Groups}
+		\end{center}
+	\end{table*}
 
 \end{document}
