@@ -2,7 +2,9 @@
 
 \begin{document}
 
-	Equation \ref{eqn:multi_group} is a general description of multi-group neutron diffusion through a reactor core and reflector. The flux depends on the transport cross section, which is accounted for in the term D.  The relationship is defined by $D_m = 3 \Sigma_{tr}^{-1}$. Values for $\Sigma_{tr}$ for the reactor core and reflector are found in table \ref{2GXS_core_table} and \ref{2GXS_reflector_table}. 
+	Equation \ref{eqn:multi_group} is a general description of multi-group neutron diffusion through a reactor core and reflector. The flux depends on the transport cross section, which is accounted for in the term D.  The relationship is defined by $D_m = 3 \Sigma_{tr}^{-1}$. Values for $\Sigma_{tr}$ for the reactor core and reflector are found in table \ref{2GXS_core_table}, \ref{2GXS_reflector_table}, \ref{4GXS_core_table}, \ref{4GXS_reflector_table}.
+	
+	In the two interpretations of multi-group theory, neutrons are divided into 2 groups (fast and slow) and 4 groups.  The finite-difference equation for each group must be derived separately because the source term for each group is different, as well as the constants used. 
 
 	
 \subsection{Numerical Approximation} \label{ssec:numerical}
@@ -11,7 +13,7 @@
 		\opmat{A} \vec{\phi} = \opmat{F} \vec{\phi}
 		\label{eqn:linalg_flux}
 	\end{equation}
-	where $\vec{\phi}$ is the flux at each node. The operator $\opmat{F}$ describes the source of the multiplying medium.  Initial guesses of 1 were used for both k and the source vector.  When using 2 groups, the operator $\opmat{A}$ can be derived from the following equations:
+	where $\vec{\phi}$ is the flux at each node. The operator $\opmat{F}$ describes the source of the multiplying medium.  Initial guesses of 1 were used for both k and the source vector.  THe flux of each group must be solved using the previous equation  \ref{eqn:linalg_flux}.  When using 2 groups, the operator $\opmat{A}$ can be derived from the following equations:
 	
 	\begin{equation*}
 		- \nabla \cdot D_{1} \nabla \phi_{1}+ \Sigma_{R_1} \phi_1 = \frac{1}{k} [nu_1 \Sigma_{f_1} \phi_{1} + nu_2 \Sigma_{f_2} \phi_{2}] 
@@ -21,7 +23,7 @@
 		- \nabla \cdot D_{2} \nabla \phi_{2}+ \Sigma_{a_2} \phi_2 = \Sigma_{s_{12}} \phi_1
 	\end{equation*}
 
-Only the first group has a fission source, while other groups gain neutrons from the downscatter of faster groups.
+Only the first group has a fission source, while other groups gain neutrons from the downscatter of faster groups.  THe flux of the previous group is then used in the calcuation of the flux for the following group(s).
 
 The internal nodes of both the reactor core and reflector can be derived with the same process as Project 2 for cylindrical coordinates.  The following general equation was used to derive the internal nodes of the reflector and moderator  and initial boundary of moderator for the first group:
 
@@ -31,7 +33,7 @@ The internal nodes of both the reactor core and reflector can be derived with th
 	
 
 
-The resulting core contribution to matrix $\opmat{A}$ (for N nodes) is:
+The resulting contribution from the core to matrix $\opmat{A}$ (for N nodes) is:
 
 \[
 	\begin{bmatrix}[1.5]
@@ -48,6 +50,44 @@ The interface node is where the reactor core and reflector meet.  This means con
 	\begin{equation}
 	\left( \frac{-D^m_1}{\delta r} + \frac{D^m_1}{2W} \right) \phi_{1,i-1} + \left( \frac{-D^m_1}{\delta r} + \frac{D^m_1}{2W} + \frac{\Sigma^m_{a,1} \delta r}{2} + \frac{D^R_1}{\delta r_R} + \frac{D^R_1}{2W} + \frac{\Sigma^R_{a,1} \delta r_R}{2} \right) \phi_{1,i} + \left( \frac{-D^R_1}{\delta r_R} + \frac{D^R_1}{2W} \right) \phi_{1,i+1}
 	\end{equation}
+	
+The finite-difference equation for the reflector is solved with the same method, excluding the boundary condition.  The flux is forced to zero at the outside edge of the reflector.  The resulting left side of the finite-difference is:
+
+	\begin{equation}
+	\frac{-D_R}{\Delta r_R^2} \left( 1 + \frac{1}{2i-1} \right) \phi_{1,i-1} + \left( \frac{2D_R}{\Delta r_R^2} + \Sigma_{a,1} \right) \phi_{1,i} + \frac{-D_R}{\Delta r_R^2} \left( 1 - \frac{1}{2i-1} \right) \phi_{1,i+1}
+	\end{equation}
+	
+For the fast group, the source term  is the fission term.  This gives a final matrix $\opmat{F}$ (for N nodes):
+	\[
+	\begin{bmatrix}[1.5]
+		\frac{1}{2k} \nu \Sigma_f \phi_0  \\
+		\frac{1}{k} \nu \Sigma_f \phi_1  \\
+		\frac{1}{k} \nu \Sigma_f \phi_2  \\
+		\frac{1}{k} \nu \Sigma_f \phi_3  \\
+		\dots \\
+		\frac{1}{k} \nu \Sigma_f \phi_{N-1}
+	\end{bmatrix}
+	\]
+	
+For the slow group,
+
+The following equations were solved to find the flux for each of the four groups:
+
+\begin{equation*}
+		- \nabla \cdot D_{1} \nabla \phi_{1}+ \Sigma_{R_1} \phi_1 = \frac{1}{k} [nu_1 \Sigma_{f_1} \phi_{1} + nu_2 \Sigma_{f_2} \phi_{2}] 
+	\end{equation*}
+	
+	\begin{equation*}
+		- \nabla \cdot D_{2} \nabla \phi_{2}+ \Sigma_{a_2} \phi_2 = \Sigma_{s_{12}} \phi_1
+	\end{equation*}
+	
+	\begin{equation*}
+		- \nabla \cdot D_{3} \nabla \phi_{3}+ \Sigma_{a_3} \phi_3 = \Sigma_{s_{13}} \phi_1 + \Sigma_{s_{23}} \phi_2
+	\end{equation*}
+	
+	\begin{equation*}
+		- \nabla \cdot D_{4} \nabla \phi_{4}+ \Sigma_{a_4} \phi_4 = \Sigma_{s_{14}} \phi_1 + \Sigma_{s_{24}} \phi_2 + \Sigma_{s_{34}} \phi_3
+	\end{equation*}
 
 
 	
