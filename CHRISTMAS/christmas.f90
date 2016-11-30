@@ -24,7 +24,7 @@ real(real64)              :: k_error, b_error
 real(real64)              :: m_old                           
 real(real64)              :: k , k_old    
 real(real64)              :: min_error=0.0001
-integer                   :: MAX_ITERATIONS = 1000 
+integer                   :: MAX_ITERATIONS = 500 
 
 ! External procedures defined in LAPACK
 external DGETRF, DGETRS
@@ -153,7 +153,7 @@ A=0
 
 
 do p=1,g
-   A(1,1,p) = (sigma_r(p,1)*dr1)+(2.0*sigma_tr(p,1)/(dr1))
+   A(1,1,p) = (0.5*sigma_r(p,1)*dr1)+(sigma_tr(p,1)/(dr1))
    A(1,2,p) = -sigma_tr(p,1)/(dr1)
 
    A(n_tot,n_tot,p) = sigma_a(1,2)*dr2 + 2.0_real64   *sigma_tr(p,2)/(dr2)
@@ -218,8 +218,8 @@ do while ( ((b_error .gt. min_error) .or. (k_error .gt. min_error)) .and. (j .lt
     b=0
     do p=1,g
         if(p .gt. 1)then
-            do i=p, g
-                b(:,p)= b(:,p) + sigma_s(i,p)*b_old(:,p)
+            do i=1, g
+                b(:,p)= b(:,p) + sigma_s(i,p)*b_old(:,i)
             enddo
         endif
         if(p .eq. 1) b(:,1)=S/k
@@ -231,7 +231,7 @@ do while ( ((b_error .gt. min_error) .or. (k_error .gt. min_error)) .and. (j .lt
     j = j+1        
 !-------------------------------------------------------------------------!
 !----------------------Error tests----------------------------------------!
-    m_old=norm2(S)
+    m_old=sum(S)
 
  
 
@@ -243,7 +243,7 @@ do while ( ((b_error .gt. min_error) .or. (k_error .gt. min_error)) .and. (j .lt
     enddo
 
 
-    k = k_old *norm2(S)/ m_old                 
+    k = k_old *sum(S)/ m_old                 
     k_error = abs((k-k_old)/k)
     
     do p=1,g
@@ -258,7 +258,7 @@ enddo
 
 j_tot=j_tot+j
 !-------------------------width adjustments for k=1-----------------------!
-
+if (j_width .eq. 5)goto 12 
   if(k .lt. 1.0-min_error)then
      w=1.1*w
     j_width=j_width+1
