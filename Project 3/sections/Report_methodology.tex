@@ -18,7 +18,7 @@
 	When using 2 groups, the operator $\opmat{A}$ can be derived from the following equations:
 	
 	\begin{equation*}
-		- \nabla \cdot D_{1} \nabla \phi_{1}+ \Sigma_{R_1} \phi_1 = \frac{1}{k} [nu_1 \Sigma_{f_1} \phi_{1} + nu_2 \Sigma_{f_2} \phi_{2}] 
+		- \nabla \cdot D_{1} \nabla \phi_{1}+ \Sigma_{R_1} \phi_1 = \frac{1}{k} [nu_1 \Sigma_{f_1} \phi_{1} + \nu_2 \Sigma_{f_2} \phi_{2}] 
 	\end{equation*}
 	
 	\begin{equation*}
@@ -95,7 +95,7 @@ Now let's take a look at the source terms.  All source terms are pushed to zero 
 		0 & 0 & \frac{1}{k} \nu \Sigma^m_f  & 0 & 0 & \dots\\
 		0 & 0 & 0 & \frac{1}{k} \nu \Sigma^m_f  & 0 & \dots \\
 		\dots & \dots & \dots & \dots & \dots & \dots \\
-		\dots & 0 & 0 & 0 & 0 & 0 \\
+		\dots & 0 & 0 & 0 & 0 & \frac{1}{2k} \nu \Sigma^m_f  \\
 	\end{bmatrix}
 	\]
 	
@@ -114,10 +114,12 @@ For the slow group, the final matrix $\opmat{F}$ (for N nodes) is:
 	\end{bmatrix}
 	\]
 
+The previous matrix can be implemented for groups 3 and 4 of the 4 group method by simply accounting for the scatter into the group of interest from all others.  This is done by summing the product of the scatter cross section and flux of the group the neutrons are scattering from.
+
 The following equations were solved to find the flux for each of the four groups:
 
 \begin{equation*}
-		- \nabla \cdot D_{1} \nabla \phi_{1}+ \Sigma_{R_1} \phi_1 = \frac{1}{k} [nu_1 \Sigma_{f_1} \phi_{1} + nu_2 \Sigma_{f_2} \phi_{2}] 
+		- \nabla \cdot D_{1} \nabla \phi_{1}+ \Sigma_{R_1} \phi_1 = \frac{1}{k} [\nu_1 \Sigma_{f_1} \phi_{1} + \nu_2 \Sigma_{f_2} \phi_{2} + \nu_3 \Sigma_{f_3} \phi_{3} + \nu_4 \Sigma_{f_4} \phi_{4}] 
 	\end{equation*}
 	
 	\begin{equation*}
@@ -125,7 +127,7 @@ The following equations were solved to find the flux for each of the four groups
 	\end{equation*}
 	
 	\begin{equation*}
-		- \nabla \cdot D_{3} \nabla \phi_{3}+ \Sigma_{a_3} \phi_3 = \Sigma_{s_{13}} \phi_1 + \Sigma_{s_{23}} \phi_2
+		- \nabla \cdot D_{3} \nabla \phi_{3}+ \Sigma_{a_3} \phi_3 = \Sigma_{s_{13}} \phi_1 + \Sigma_{s_{23}} \phi_2  
 	\end{equation*}
 	
 	\begin{equation*}
@@ -144,7 +146,7 @@ Group 3:
 		\dots & 0 & 0 & 0 & \Sigma^R_{s13} \phi_1 + \Sigma^R_{s23} \phi_2  & 0 \\
 		\dots & 0 & 0 & 0 & \dots & \Sigma^R_{s13} \phi_1 + \Sigma^R_{s23} \phi_2 \\
 		\dots & \dots & \dots & \dots & \dots & \dots \\
-		\dots & 0 & 0 & 0 & \dots & 0 \\
+
 	\end{bmatrix}
 	\]
 	
@@ -159,7 +161,7 @@ Group 4:
 		\dots & 0 & 0 & 0 & \Sigma^R_{s14} \phi_1 + \Sigma^m_{s24} \phi_2  + \Sigma^R_{s34} \phi_3 & 0 \\
 		\dots & 0 & 0 & 0 & \dots & \Sigma^R_{s14} \phi_1 + \Sigma^m_{s24} \phi_2 + \Sigma^R_{s34} \phi_3 \\
 		\dots & \dots & \dots & \dots & \dots & \dots \\
-		\dots & 0 & 0 & 0 & \dots & 0 \\
+		
 	\end{bmatrix}
 	\]
 	
