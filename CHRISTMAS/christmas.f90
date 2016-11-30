@@ -147,8 +147,8 @@ endif
 !--------------------------Matrix Declaration-----------------------------!
 
 
-100 dr1 = w/n                               ! Step Size
-dr2 = w*ratio/n_flector
+100 dr1 = w/(n-1)                               ! Step Size
+dr2 = w*ratio/(n_flector-1)
 A=0
 
 
