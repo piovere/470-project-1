@@ -39,11 +39,11 @@ The resulting contribution from the core to matrix $\opmat{A}$ (for N nodes) is:
 
 \[
 	\begin{bmatrix}[1.5]
-		\frac{1}{2} \Sigma_a + \frac{D_m}{(2i-1)\Delta r^2} +\frac{D_m}{r^2} & -\frac{D_m}{(2i-1)\Delta r^2} - \frac{D_m}{r^2} & 0 & \dots & 0 \\
-		\frac{-D_m}{\Delta r^2} \left( 1 + \frac{1}{2i-1} \right) & \frac{2D_m}{\Delta r^2} + \Sigma_a &  \frac{-D_m}{\Delta r^2} \left( 1 - \frac{1}{2i-1} \right) & \dots & 0 \\
-		0 &  \frac{-D_m}{\Delta r^2} \left( 1 - \frac{1}{2i-1} \right) & \frac{2D_m}{\Delta r^2} + \Sigma_a & \frac{-D_m}{\Delta r^2} \left( 1 - \frac{1}{2i-1} \right) & 0\\
-		\dots & \dots \dots & \frac{2D_m}{\Delta r^2} + \Sigma_a & 0 \\
-		0 & 0 & 0 & -\frac{-D_m}{\Delta r^2} \left( 1 - \frac{1}{2i-1} \right) & \frac{2D_m}{\Delta r^2} + \Sigma_a
+		 \Sigma^m_R \delta r + \frac{2D^m_g}{\delta r} & -\frac{D^m_g}}{\delta r} & 0 & \dots & 0 \\
+		-\frac{D^m_g}{\delta r} \left( 1 - \frac{1}{2i-1} \right) & \frac{2D^m_g}{\delta r} + \Sigma^m_R \delta r &  -\frac{D^m_g}{\delta r} \left( 1 + \frac{1}{2i-1} \right) & \dots & 0 \\
+		0 &  -\frac{D^m_g}{\delta r} \left( 1 - \frac{1}{2i-1} \right) & \frac{2D^m_g}{\delta r} + \Sigma^m_R \delta r &  -\frac{D^m_g}{\delta r} \left( 1 + \frac{1}{2i-1} \right) & 0\\
+		\dots & \dots \dots & \frac{2D^m_g}{\delta r} & \dots \\
+		0 & 0 & 0 & -\frac{D^m_g}{\delta r} \left( 1 - \frac{1}{2i-1} \right) & \frac{2D^m_g}{\delta r} + \Sigma^m_R \delta r
 	\end{bmatrix}
 	\]
 	
@@ -53,17 +53,27 @@ The resulting contribution from the reflector to matrix $\opmat{A}$ (for N nodes
 
 \[
 	\begin{bmatrix}[1.5]
-		\frac{-D_R}{\Delta r_R^2} \left( 1 + \frac{1}{2i-1} \right) & \frac{2D_R}{\Delta r_R^2} + \Sigma^R_a &  \frac{-D_R}{\Delta r_R^2} \left( 1 - \frac{1}{2i-1} \right) & \dots & 0 \\
-		0 &  \frac{-D_R}{\Delta r_R^2} \left( 1 - \frac{1}{2i-1} \right) & \frac{2D_R}{\Delta r_R^2} + \Sigma^R_a & \frac{-D_R}{\Delta r_R^2} \left( 1 - \frac{1}{2i-1} \right) & 0\\
-		\dots & \dots \dots & \frac{2D_R}{\Delta r_R^2} + \Sigma_a & 0 \\
-		0 & 0 & 0 & -\frac{-D_R}{\Delta r_R^2} \left( 1 - \frac{1}{2i-1} \right) & \frac{2D_R}{\Delta r^_R2} + \Sigma^R_a
+		-\frac{D^R_g}{\delta r_R} \left( 1 - \frac{1}{2i-1} \right) & \frac{2D^R_g}{\delta r_R} + \Sigma^R_a \delta r &  -\frac{D^R_g}{\delta r_R} \left( 1 + \frac{1}{2i-1} \right) & \dots & 0 \\
+		0 &  -\frac{D^R_g}{\delta r_R} \left( 1 - \frac{1}{2i-1} \right) & \frac{2D^R_g}{\delta r_R} + \Sigma^R_a \delta r_R &  -\frac{D^R_g}{\delta r_R} \left( 1 + \frac{1}{2i-1} \right) & 0\\
+		\dots & \dots \dots & \\frac{2D^R_g}{\delta r_R} + \Sigma^R_a \delta r_R  & \dots \\
+		0 & 0 & 0 & -\frac{D^R_g}{\delta r_R} \left( 1 - \frac{1}{2i-1} \right) & \frac{2D^R_g}{\delta r_R} + \Sigma^R_a \delta r_R
 	\end{bmatrix}
 	\]
 
 This part of the matrix $\opmat{A}$ is located at the bottom right of the entire matrix.
 
 	
-Connecting the reactor core and reflector is the interface node.  This means contributions from both materials must be accounted for at that point.  The following left side of the finite-difference equation is derived for this special case:
+Connecting the reactor core and reflector is the interface node.  This means contributions from both materials must be accounted for at that point.  The following represents the interface node implemented in the matrix:
+
+
+\[
+	\begin{bmatrix}[1.5]
+		 
+		\dots & -\frac{D^m_g}}{\delta r} & frac{D^m_g}}{\delta r} + \frac{D^R_g}}{\delta r_R} + \frac{1}{2} \Sigma^m_R \delta r + \frac{1}{2} \Sigma^R_a \delta r_R & -\frac{D^R_g}}{\delta r_R}  & \dots \\
+		
+	\end{bmatrix}
+	\]
+
 
 	\begin{equation}
 	\left( \frac{-D^m_1}{\delta r} + \frac{D^m_1}{2W} \right) \phi_{1,i-1} + \left( \frac{-D^m_1}{\delta r} + \frac{D^m_1}{2W} + \frac{\Sigma^m_{a,1} \delta r}{2} + \frac{D^R_1}{\delta r_R} + \frac{D^R_1}{2W} + \frac{\Sigma^R_{a,1} \delta r_R}{2} \right) \phi_{1,i} + \left( \frac{-D^R_1}{\delta r_R} + \frac{D^R_1}{2W} \right) \phi_{1,i+1}
