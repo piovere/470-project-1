@@ -28,4 +28,4 @@ def matrix(scattering, absorption, diffusion, width, nodes):
     mat[nodes - 2][nodes - 2] = -2 * ft + absorption + np.sum(scattering)
     mat[nodes - 2][nodes - 3] = ft + - 1 / (2 * j)
 
-    print(mat)
+    return mat
