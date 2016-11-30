@@ -4,7 +4,7 @@
 
 Proving the capabilities and safety of a reactor design requires effective modeling of the neutron flux in the core (expressed in equation \ref{eqn:transport}). For real cores, however, this is impossible, and must be first simplified, then discretized to provide the solution for a representative mesh. Certain simplifications can be applied to help make the problem easier to solve, since it allows the time dependent terms to be removed.
 
-1) Isotropic assumption: ignoring the direction of the incoming neutron. This effectively drops all terms involving Ωˆ
+1) Isotropic assumption: ignoring the direction of the incoming neutron. This effectively drops all terms involving Ωˆ
 2) Discretized energies:  Neutrons ar placed into energy bins or groups
 3) There is an interface between the moderator and reflector material.
 4) Steady-state assumption: assuming that the system has been in this state for a long period and that no transients occur
@@ -27,7 +27,7 @@ Proving the capabilities and safety of a reactor design requires effective model
 	
 	%\begin{strip}
 	\begin{equation}
-		- \nabla \cdot D_{g} \nabla \phi_{g}+ v \Sigma_{Rg} \phi_g = \sum_{g^'=1}^{g-1} + \Sigma_{sg^'g} \phi_{g^'} + \frac{1}{k} \chi_g \sum_{g^'=1}^{G} \nu_{g^'} \Sigma_{tg^'} \phi_{g^'} 
+		- \nabla \cdot D_{g} \nabla \phi_{g}+ v \Sigma_{Rg} \phi_g = \sum_{g^{'}=1}^{g-1} + \Sigma_{sg^{'}g} \phi_{g^{'}} + \frac{1}{k} \chi_g \sum_{g^{'}=1}^{G} \nu_{g^{'}} \Sigma_{tg^{'}} \phi_{g^{'}} 
 		\label{eqn:multi_group}
 	\end{equation}
 	%\end{strip}
