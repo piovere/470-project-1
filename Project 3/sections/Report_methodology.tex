@@ -39,11 +39,11 @@ The resulting contribution from the core to matrix $\opmat{A}$ (for N nodes) is:
 
 \[
 	\begin{bmatrix}[1.5]
-		 \Sigma^m_R \delta r + \frac{2D^m_g}{\delta r} & -\frac{D^m_g}}{\delta r} & 0 & \dots & 0 \\
-		-\frac{D^m_g}{\delta r} \left( 1 - \frac{1}{2i-1} \right) & \frac{2D^m_g}{\delta r} + \Sigma^m_R \delta r &  -\frac{D^m_g}{\delta r} \left( 1 + \frac{1}{2i-1} \right) & \dots & 0 \\
-		0 &  -\frac{D^m_g}{\delta r} \left( 1 - \frac{1}{2i-1} \right) & \frac{2D^m_g}{\delta r} + \Sigma^m_R \delta r &  -\frac{D^m_g}{\delta r} \left( 1 + \frac{1}{2i-1} \right) & 0\\
-		\dots & \dots \dots & \frac{2D^m_g}{\delta r} & \dots \\
-		0 & 0 & 0 & -\frac{D^m_g}{\delta r} \left( 1 - \frac{1}{2i-1} \right) & \frac{2D^m_g}{\delta r} + \Sigma^m_R \delta r
+		 \Sigma^m_{R,g} \Delta r + \frac{2D^m_g}{\Delta r} & -\frac{D^m_g}{\Delta r} & 0 & \dots \\
+		-\frac{D^m_g}{\Delta r} \left( 1 - \frac{1}{2i-1} \right) & \frac{2D^m_g}{\Delta r} + \Sigma^m_{R,g} \Delta r &  -\frac{D^m_g}{\Delta r} \left( 1 + \frac{1}{2i-1} \right) & \dots \\
+		0 &  -\frac{D^m_g}{\Delta r} \left( 1 - \frac{1}{2i-1} \right) & \frac{2D^m_g}{\Delta r} + \Sigma^m_{R,g} \Delta r &  -\frac{D^m_g}{\Delta r} \left( 1 + \frac{1}{2i-1} \right)\\
+		\dots & \dots & \frac{2D^m_g}{\Delta r} + \Sigma^m_{R,g} \Delta r & \dots\\
+	
 	\end{bmatrix}
 	\]
 	
@@ -53,10 +53,9 @@ The resulting contribution from the reflector to matrix $\opmat{A}$ (for N nodes
 
 \[
 	\begin{bmatrix}[1.5]
-		-\frac{D^R_g}{\delta r_R} \left( 1 - \frac{1}{2i-1} \right) & \frac{2D^R_g}{\delta r_R} + \Sigma^R_a \delta r &  -\frac{D^R_g}{\delta r_R} \left( 1 + \frac{1}{2i-1} \right) & \dots & 0 \\
-		0 &  -\frac{D^R_g}{\delta r_R} \left( 1 - \frac{1}{2i-1} \right) & \frac{2D^R_g}{\delta r_R} + \Sigma^R_a \delta r_R &  -\frac{D^R_g}{\delta r_R} \left( 1 + \frac{1}{2i-1} \right) & 0\\
-		\dots & \dots \dots & \\frac{2D^R_g}{\delta r_R} + \Sigma^R_a \delta r_R  & \dots \\
-		0 & 0 & 0 & -\frac{D^R_g}{\delta r_R} \left( 1 - \frac{1}{2i-1} \right) & \frac{2D^R_g}{\delta r_R} + \Sigma^R_a \delta r_R
+		-\frac{D^R_g}{\Delta r_R} \left( 1 - \frac{1}{2i-1} \right) & \frac{2D^R_g}{\Delta r_R} + \Sigma^R_{a,g} \Delta r &  -\frac{D^R_g}{\Delta r_R} \left( 1 + \frac{1}{2i-1} \right) & \dots \\
+		\dots & \frac{2D^R_g}{\Delta r_R} + \Sigma^R_{a,g} \Delta r_R  & \dots & \dots \\
+		\dots & 0 & -\frac{D^R_g}{\Delta r_R} \left( 1 - \frac{1}{2i-1} \right) & \frac{2D^R_g}{\Delta r_R} + \Sigma^R_{a,g} \Delta r_R
 	\end{bmatrix}
 	\]
 
@@ -68,16 +67,12 @@ Connecting the reactor core and reflector is the interface node.  This means con
 
 \[
 	\begin{bmatrix}[1.5]
-		 
-		\dots & -\frac{D^m_g}}{\delta r} & frac{D^m_g}}{\delta r} + \frac{D^R_g}}{\delta r_R} + \frac{1}{2} \Sigma^m_R \delta r + \frac{1}{2} \Sigma^R_a \delta r_R & -\frac{D^R_g}}{\delta r_R}  & \dots \\
-		
+		 \dots & \dots & \dots  & \dots \\
+		\dots & -\frac{D^m_g}{\Delta r} & \frac{D^m_g}{\Delta r} + \frac{D^R_g}{\Delta r_R} + \frac{1}{2} \Sigma^m_{R,g} \Delta r + \frac{1}{2} \Sigma^R_{a,g} \Delta r_R & -\frac{D^R_g}{\Delta r_R}  & \dots \\
+	\dots & \dots & \dots  & \dots \\	
 	\end{bmatrix}
 	\]
 
-
-	\begin{equation}
-	\left( \frac{-D^m_1}{\delta r} + \frac{D^m_1}{2W} \right) \phi_{1,i-1} + \left( \frac{-D^m_1}{\delta r} + \frac{D^m_1}{2W} + \frac{\Sigma^m_{a,1} \delta r}{2} + \frac{D^R_1}{\delta r_R} + \frac{D^R_1}{2W} + \frac{\Sigma^R_{a,1} \delta r_R}{2} \right) \phi_{1,i} + \left( \frac{-D^R_1}{\delta r_R} + \frac{D^R_1}{2W} \right) \phi_{1,i+1}
-	\end{equation}
 	
 The finite-difference equation for the reflector is solved with the same method, excluding the boundary condition.  The flux is forced to zero at the outside edge of the reflector.  The resulting left side of the finite-difference is:
 
@@ -90,7 +85,7 @@ Ther terms from this equation is implented in the matrix in the row between the 
 Now let's take a look at the source terms.  All source terms are pushed to zero at the last node, since there is not flux outside of the reflector.  For the fast group, the source term  is the fission term.  This gives a final matrix $\opmat{F}$ (for N nodes):
 	\[
 	\begin{bmatrix}[1.5]
-		\frac{1}{2k} \nu \Sigma^m_f  & 0 & 0 & 0 & \dots\\
+		\frac{1}{2k} \nu \Sigma^m_f  & 0 & 0 & 0 & \dots & \dots \\
 		0 & \frac{1}{k} \nu \Sigma^m_f  & 0 & 0 & 0 & \dots \\
 		0 & 0 & \frac{1}{k} \nu \Sigma^m_f  & 0 & 0 & \dots\\
 		0 & 0 & 0 & \frac{1}{k} \nu \Sigma^m_f  & 0 & \dots \\
