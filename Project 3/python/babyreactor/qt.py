@@ -1,5 +1,9 @@
-from babyreactor.matrix import matrix
+""" Quick dirty test script
+"""
+
+
 import numpy as np
+from babyreactor.matrix import matrix
 
 
 ABSORPTION = 0.15
