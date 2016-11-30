@@ -1,5 +1,8 @@
 EXECUTABLE=desperatev2.exe
 SOURCES=desperatev2_CHVALA.f90
+#EXECUTABLE=mock.exe
+#SOURCES=mock.f90
+
 
 OBJECTS=$(SOURCES:.f90=.o)
 LDFLAGS=-llapack
