@@ -21,9 +21,9 @@ real(real64), allocatable :: b_old(:,:), S(:)
 !------------------------Used for Iteration loop--------------------------!
 integer                   :: j, j_width ,j_tot, i,p                
 real(real64)              :: k_error, b_error
-real(real64)              :: m_old                           
+real(real64)              :: m, m_old                           
 real(real64)              :: k , k_old    
-real(real64)              :: min_error=0.0001
+real(real64)              :: min_error=0.01
 integer                   :: MAX_ITERATIONS = 500 
 
 ! External procedures defined in LAPACK
@@ -44,7 +44,7 @@ read *,g
 n=n-1
 n_tot=(n+n_flector)
 allocate (A(n_tot,n_tot,g),b(n_tot,g),ipiv(n_tot),b_old(n_tot,g),S(n_tot),sigma_fnu(n_tot,g))   ! Used in diff eqs
-w=10
+w=5
 !---------------------Matrix Constants Declaration------------------------!
 
 allocate (sigma_a(g,2), sigma_s(g,g), sigma_tr(g,2),chi(g),sigma_r(g,2))
@@ -146,11 +146,10 @@ endif
 
 !--------------------------Matrix Declaration-----------------------------!
 
-
-100 dr1 = w/(n-1)                               ! Step Size
+100 continue
+ dr1 = w/(n-1)                               ! Step Size
 dr2 = w*ratio/(n_flector-1)
 A=0
-
 
 do p=1,g
    A(1,1,p) = (0.5*sigma_r(p,1)*dr1)+(sigma_tr(p,1)/(dr1))
@@ -162,7 +161,7 @@ do p=1,g
    A(n,n-1,p) = -sigma_tr(p,1)/(dr1)  
    A(n,n+1,p) =  -sigma_tr(p,2)/(dr2) 
    A(n,n,p)=(sigma_tr(p,1)/(dr1)+sigma_tr(p,2)/(dr2))+(sigma_a(p,2)*dr2+sigma_r(p,1)*dr1)/2.0
-
+!((2*n+1)/(n-1))*
    do i=2 , n-1
  
       A(i,i,p) = sigma_r(p,1) *dr1 + 2.0_real64   *sigma_tr(p,1)/(dr1)
@@ -198,7 +197,7 @@ k=1.0
 S=0
 do p=1,g
     do i=1,n_tot
-        S(i)= S(i)+dr1*sigma_fnu(i,p)*b(i,p)/2.0
+        S(i)= S(i)+dr1*sigma_fnu(i,p)*b(i,p)
     enddo
 enddo
 
@@ -206,7 +205,8 @@ j=0
 
 k_error = 1.0
 b_error = 1.0
-
+m=0
+m_old=0
 
 do while ( ((b_error .gt. min_error) .or. (k_error .gt. min_error)) .and. (j .lt. MAX_ITERATIONS))
 
@@ -231,31 +231,35 @@ do while ( ((b_error .gt. min_error) .or. (k_error .gt. min_error)) .and. (j .lt
     j = j+1        
 !-------------------------------------------------------------------------!
 !----------------------Error tests----------------------------------------!
-    m_old=sum(S)
+    m_old=norm2(S)
 
- 
 
     S=0
     do p=1,g
         do i=1,n_tot
-            S(i)= S(i)+dr1*sigma_fnu(i,p)*b(i,p)/2.0
+            S(i)= S(i)+dr1*sigma_fnu(i,p)*b(i,p)
         enddo
     enddo
+    m= norm2(S)
 
-
-    k = k_old *sum(S)/ m_old                 
+    k =k_old* m/m_old                 
     k_error = abs((k-k_old)/k)
-    
+
     do p=1,g
-        chi(p)=maxval(abs(b(:,p) - b_old(:,p)))/maxval(b_old(:,p))
+        chi(p)=maxval(abs(b(:,p) - b_old(:,p))/b_old(:,p))
     enddo
     b_error=maxval(chi)
-    
-   do i=1,g
+    do i=1,g
         b(:,i)  = b(:,i) / norm2(b(:,i) )
     enddo
-enddo
 
+    !print *,b_error
+enddo
+print *,'Mid width:  ', 2.0*w
+    print *,(b_error .gt. min_error) ,(k_error .gt. min_error)
+print *,'Iteration number:  ', j_width
+print *,'final k value:  ', k
+print *,''
 j_tot=j_tot+j
 !-------------------------width adjustments for k=1-----------------------!
 if (j_width .eq. 5)goto 12 
