@@ -21,8 +21,10 @@ def matrix(scattering, absorption, diffusion, width, nodes):
         mat[j][j+1] = ft * (1 + 1 / (2 * j))
 
     # Reflective boundary condition at node 0
-    mat[0][0] = -2 * ft + absorption + np.sum(scattering)
-    mat[0][1] = 2 * ft
+    # mat[0][0] = -2 * ft + absorption + np.sum(scattering)
+    mat[0][0] = absorption / 2
+    # mat[0][1] = 2 * ft
+    mat[0][1] = 0.
 
     # flux at rightmost = 0
     mat[nodes - 2][nodes - 2] = -2 * ft + absorption + np.sum(scattering)
