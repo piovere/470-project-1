@@ -2,6 +2,9 @@
 *.exe
 *.o
 
+# PyCharm cruft
+.idea/
+
 # Don't clutter up with dat files
 *.dat
 
