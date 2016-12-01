@@ -18,3 +18,4 @@ $(EXECUTABLE): $(OBJECTS)
 
 clean:
 	rm -f *.o  $(EXECUTABLE)
+	rm -f *.dat
