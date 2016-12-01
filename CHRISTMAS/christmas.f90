@@ -289,6 +289,8 @@ j_tot=j_tot+j
 print *,'Number of iterations until convergence:  ', j_tot
 print *,'Critical width:  ', 2.0_real64*(1_real64+ratio)*w
 print *,'K-value is',k
+print *,'Final b error is',b_error
+print *,'Final k error is',k_error
 
 open( unit = 77, file= "Flux1Group.dat")
 open( unit = 66, file= "Flux2Group.dat")
