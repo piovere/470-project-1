@@ -4,11 +4,11 @@
 
 A Fortran program was developed to implement the discrete solution to the transport equation. The source code is included as an attachment to this report. The code uses $\opmat{A} \vec{b} = \opmat{F} \vec{b}$ to converge to the solution. And initial guess value for b is assumed (we use $\vec{f}=1$ for all discrete points but any values could be used but convergence time will vary). Our b vector is then multiplied by the inverse (obtained using LU decomposition) of our A matrix describe in the Methodology section above. We then repeated the matrix multiplication with the newly obtained flux until the change upon iteration in the eigenvalues and eigenvectors is lower than some minimum error specified.
 
-The program allowed an analysis of a one-dimensional core filled with a multiplying medium. The flux distribution was solved for by iteratively seeking out eigenvalues of the material matrix. 
+The program allowed an analysis of a one-dimensional core filled with a multiplying medium surrounded by a reflecting medium. In this analysis 2 and 4 group diffusion approximations were used. The flux distribution for each group was solved for by iteratively seeking out eigenvalues of the material matrix. The flux profiles fit what was to be expected, that the reflector region generates a significant bump for the slower groups near the interface between the two regions, as well as the 1st groups flux having a significant decrease inside the reflector region. 
 
-In addition to finding the flux profile of the slab, the program also finds at what width the material with a specific $\Sigma_f$ and $\Sigma_a$ is critical. It achieves this by nesting the loop described above into an additional loop which tests if $k = 1 \pm error margin$  and slightly changes the width accordingly until $k$ converges to that value. 
 
-Our numerical calculation of the given parameters gave a critical width of 5.14 centimeters.
+
+While the ground work for a critically size search were starting to be implemented consistent widths were not achieved and so were not included in this report.
 
 As with the previous project, it was worth noting how the values converged as the number of nodes was increased. As such, the program was run with different parameters to determine the convergence. The results of this can be seen in figure \ref{fig:flux_vs_nodes}. From this, it is clear that this method converges by or before $N=500$ nodes, since this is apparently identical to $N=10^3$ nodes.
 
@@ -18,5 +18,6 @@ As with the previous project, it was worth noting how the values converged as th
 \caption{Flux vs. Width as a function of the number of nodes}
 \label{fig:flux_vs_nodes}
 \end{figure}
+
 
 \end{document}
