@@ -1,5 +1,5 @@
 EXECUTABLE=christmas.exe
-SOURCES=matrix.f90 christmas.f90
+SOURCES=matrix.f90 flux_iteration.f90 christmas.f90
 
 OBJECTS=$(SOURCES:.f90=.o)
 LDFLAGS=-llapack
