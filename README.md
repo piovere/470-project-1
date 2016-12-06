@@ -28,6 +28,7 @@ Current Issues with christmas (11/28 Andrew)
 - [UT Color Pallette](http://brand.utk.edu/colors/palettes/)
 - [Some FOTRAN lessons](http://www.cs.mtu.edu/~shene/COURSES/cs201/NOTES/fortran.html)
 - [A thread on FORTRAN in multiple files](https://www.physicsforums.com/threads/fortran-77-subroutine-in-separate-file.473952/)
+- [How to assign elements to a matrix in Fortran](http://stackoverflow.com/questions/3708307/how-to-initialize-two-dimensional-arrays-in-fortran)
 
 
 # Presentation
