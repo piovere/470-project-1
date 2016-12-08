@@ -6,8 +6,8 @@
 from __future__ import division
 import numpy as np
 import numpy.linalg as la
-from babyreactor.config import MIN_ERROR, MAX_ITERATIONS
-from babyreactor.matrix import matrix
+from .config import MIN_ERROR, MAX_ITERATIONS
+from .matrix import matrix
 
 
 def eigenfluxes(width, nodes, source, min_error=MIN_ERROR):
@@ -20,7 +20,7 @@ def eigenfluxes(width, nodes, source, min_error=MIN_ERROR):
     mat = matrix(scattering, absorption, diffusion, width, nodes)
 
     # Seed flux and k values
-    flux = np.ones(len(mat[0]))
+    flux = np.ones(mat.shape[0])
     k = 1.
 
     # seed initial error values
@@ -34,11 +34,12 @@ def eigenfluxes(width, nodes, source, min_error=MIN_ERROR):
         while (k_error > MIN_ERROR or flux_error > MIN_ERROR) and num_iterations < MAX_ITERATIONS:
             num_iterations += 1
 
-            if num_iterations % 1000 == 0:
+            if num_iterations % 10000 == 0:
                 print(num_iterations)
 
-            flux, flux_error, k, k_error = iterate(mat, flux, k)
+            flux, flux_error, k, k_error = iterate(mat, flux, k, source)
     except ValueError as e:
+        print('I\'m in the exception block')
         print(k_error)
         print(k)
         print(flux_error)
@@ -59,14 +60,19 @@ def iterate(mat, flux, k, source=None):
     k_old = k
     flux_old = flux
 
-    b_vector = rightside(flux, 0.1570 / 2.43, 0., 2.43, k, source)
+    # npf = 2.43
+    # fission = 0.1570 / npf
+    npf = 0
+    fission = 0
+
+    b_vector = rightside(flux, fission, 0., npf, k, source)
 
     flux = la.solve(mat, b_vector)
 
-    m = la.norm(flux)
+    m_new = la.norm(flux)
     m_old = la.norm(flux_old)
 
-    k = k_old * m / m_old
+    k = k_old * m_new / m_old
 
     flux_error = np.amax(abs(flux - flux_old) / flux)
     k_error = abs(k - k_old) / k
@@ -75,6 +81,15 @@ def iterate(mat, flux, k, source=None):
 
 
 def rightside(flux, fission, scattering, neutrons_per_fission, k, sources=None):
+    """
+
+    :param flux: numpy.ndarray
+    :param fission: float
+    :param scattering: float
+    :param neutrons_per_fission: float
+    :param k: float
+    param sources: numpy.ndarray
+    """
     res = np.zeros_like(flux)
     if sources is None:
         sources = np.zeros_like(flux)
@@ -82,6 +97,7 @@ def rightside(flux, fission, scattering, neutrons_per_fission, k, sources=None):
     scat = np.zeros_like(flux) * scattering
 
     res = sources + fis + scat
-    res[0] = res[0] / 2
+    # res[0] = res[0] / 2
 
+    # print(res)
     return res
