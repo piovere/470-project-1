@@ -35,3 +35,14 @@ subroutine iterate(matrix, S, flux, k, flux_error, k_error)
     flux_error = maxval(abs(flux - flux_old) / flux)
     k_error = abs(k - k_old) / k
 end subroutine iterate
+
+subroutine fission_source(S, flux, sigma_f, nu)
+    use iso_fortran_env
+    implicit none
+
+    integer N :: ! length of flux / source vector
+    real(real64), intent(in) :: sigma_f, nu
+    real(real64), intent(in) :: flux(:)
+    real(real64), intent(inout) :: S
+
+end subroutine fission_source
