@@ -41,6 +41,7 @@ print *,'What is the desired ratio between core and reflector width?( dw/W) real
 read *, ratio
 print *,'Number of Energy groups?'
 read *,g
+print *,'|------------------------------------------------------------------------------|'
 n=n-1
 n_tot=(n+n_flector)
 allocate (A(n_tot,n_tot,g),b(n_tot,g),ipiv(n_tot,g),b_old(n_tot,g),S(n_tot),sigma_fnu(n_tot,g))   ! Used in diff eqs
@@ -156,24 +157,24 @@ do p=1,g
    A(1,2,p) = -sigma_tr(p,1)/(dr1)
 
    A(n_tot,n_tot,p) = sigma_a(1,2)*dr2 + 2.0_real64   *sigma_tr(p,2)/(dr2)
-   A(n_tot,n_tot-1,p) = -(1_real64-1_real64/(2_real64*n_tot-1_real64))*sigma_tr(p,2)/(dr2)
+   A(n_tot,n_tot-1,p) = -(1.0_real64-1.0_real64/(2.0_real64*real(n_tot,real64)-1.0_real64))*sigma_tr(p,2)/(dr2)
 
    A(n,n-1,p) = -sigma_tr(p,1)/(dr1)  
    A(n,n+1,p) =  -sigma_tr(p,2)/(dr2) 
    A(n,n,p)=(sigma_tr(p,1)/(dr1)+sigma_tr(p,2)/(dr2))+(sigma_a(p,2)*dr2+sigma_a(p,1)*dr1)/2.0_real64
-!((2*n+1)/(n-1))*
+
    do i=2 , n-1
  
       A(i,i,p) = sigma_r(p,1) *dr1 + 2.0_real64   *sigma_tr(p,1)/(dr1)
-      A(i,i+1,p) = -(1_real64+1_real64/(2.0_real64*i-1_real64))*sigma_tr(p,1)/(dr1)
-      A(i,i-1,p) = -(1_real64-1_real64/(2.0_real64*i-1_real64))*sigma_tr(p,1)/(dr1)
+      A(i,i+1,p) = -(1.0_real64+1_real64/(2.0_real64*real(i,real64)-1.0_real64))*sigma_tr(p,1)/(dr1)
+      A(i,i-1,p) = -(1.0_real64-1_real64/(2.0_real64*real(i,real64)-1.0_real64))*sigma_tr(p,1)/(dr1)
 
    enddo
    do i=n+1 , n_tot-1
 
       A(i,i,p) = sigma_a(p,2)*dr2+ 2.0_real64   *sigma_tr(p,2)/(dr2)
-      A(i,i+1,p) = -sigma_tr(p,2)/(dr2)*(1_real64+1_real64/(2.0_real64*i-1_real64))
-      A(i,i-1,p) = -sigma_tr(p,2)/(dr2)*(1_real64-1_real64/(2.0_real64*i-1_real64))
+      A(i,i+1,p) = -sigma_tr(p,2)/(dr2)*(1.0_real64+1.0_real64/(2.0_real64*real(i,real64)-1.0_real64))
+      A(i,i-1,p) = -sigma_tr(p,2)/(dr2)*(1.0_real64-1.0_real64/(2.0_real64*real(i,real64)-1.0_real64))
 
    enddo
 enddo
@@ -216,7 +217,7 @@ do while ( ((b_error .gt. min_error) .or. (k_error .gt. min_error)) .and. (j .lt
 
 
 !------------------Eigenvalue Search--------------------------------------!
-
+    b=0
     do p=1,g
         if(p .gt. 1)then
             
@@ -259,13 +260,14 @@ do while ( ((b_error .gt. min_error) .or. (k_error .gt. min_error)) .and. (j .lt
     b_old = b     
     k_old = k 
 
-    !print *,b_error
+
 enddo
 
 print *,'Iteration number:  ', j_width
 print *,'Mid width:  ', 2.0_real64*w
-print *,(b_error .gt. min_error) ,(k_error .gt. min_error)
 print *,'final k value:  ', k
+print *,'B_error :      ',b_error
+print *,'k_error :      ',k_error
 print *,''
 
 j_tot=j_tot+j
@@ -273,11 +275,11 @@ j_tot=j_tot+j
 !if (j_width .eq. 10)goto 12
  
   if(k .lt. 1.0_real64-min_error)then
-     w=1.1_real64*w
+     w=w*k
     j_width=j_width+1
      goto 100
   else if(k .gt. 1.0_real64+min_error)then  
-     w=0.9_real64*w
+     w=w/k
     j_width=j_width+1
      goto 100
   else
@@ -286,6 +288,7 @@ j_tot=j_tot+j
 
 12 continue
 !-------------------------VOMIT RESULTS-----------------------------------!
+print *,'|------------------------------------------------------------------------------|'
 print *,'Number of iterations until convergence:  ', j_tot
 print *,'Critical width:  ', 2.0_real64*(1_real64+ratio)*w
 print *,'K-value is',k
@@ -319,5 +322,3 @@ write(44, "(1e10.4)" ) 0.0
 
 call system('gnuplot -p flux.plt')
 end program christmas
-
-
