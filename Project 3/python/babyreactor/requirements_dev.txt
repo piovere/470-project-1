@@ -8,4 +8,4 @@ coverage==4.1
 Sphinx==1.4.8
 cryptography>=3.2
 pyyaml>=4.2b1
-pytest==2.9.2
+pytest==9.0.3
